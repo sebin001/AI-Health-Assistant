@@ -1,0 +1,671 @@
+{% extends "assist/base.html" %}
+{% load static %}
+
+{% block title %}
+Create Account | AI Health Assistant
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/auth.css' %}"
+>
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="auth-page">
+
+    <div class="auth-container">
+
+
+        <!-- ==================================================
+             LEFT SIDE
+        =================================================== -->
+
+        <section class="auth-hero">
+
+
+            <!-- BRAND -->
+
+            <div class="auth-brand">
+
+                <div class="auth-brand-icon">
+
+                    <i class="fa-solid fa-heart-pulse"></i>
+
+                </div>
+
+                <div class="auth-brand-text">
+
+                    <strong>
+                        AI Health Assistant
+                    </strong>
+
+                    <span>
+                        Intelligent Healthcare
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- HERO CONTENT -->
+
+            <div class="auth-hero-content">
+
+                <div class="auth-eyebrow">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                    Smart Healthcare Platform
+
+                </div>
+
+
+                <h1>
+
+                    Create your
+
+                    <span>
+                        health account.
+                    </span>
+
+                </h1>
+
+
+                <p>
+
+                    Join AI Health Assistant and manage
+                    your health information with intelligent
+                    and secure healthcare technology.
+
+                </p>
+
+
+                <!-- BENEFITS -->
+
+                <div class="auth-benefits">
+
+
+                    <!-- Secure Account -->
+
+                    <div class="auth-benefit">
+
+                        <div class="auth-benefit-icon">
+
+                            <i class="fa-solid fa-user-shield"></i>
+
+                        </div>
+
+                        <div class="auth-benefit-content">
+
+                            <strong>
+                                Secure Account
+                            </strong>
+
+                            <span>
+                                Your personal information
+                                stays protected.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Face ID -->
+
+                    <div class="auth-benefit">
+
+                        <div class="auth-benefit-icon">
+
+                            <i class="fa-solid fa-fingerprint"></i>
+
+                        </div>
+
+                        <div class="auth-benefit-content">
+
+                            <strong>
+                                Face ID Security
+                            </strong>
+
+                            <span>
+                                Secure biometric authentication
+                                for your account.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- AI -->
+
+                    <div class="auth-benefit">
+
+                        <div class="auth-benefit-icon">
+
+                            <i class="fa-solid fa-brain"></i>
+
+                        </div>
+
+                        <div class="auth-benefit-content">
+
+                            <strong>
+                                AI Health Assistance
+                            </strong>
+
+                            <span>
+                                Intelligent tools to support
+                                your healthcare journey.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- HERO FOOTER -->
+
+            <div class="auth-hero-footer">
+
+                <i class="fa-solid fa-lock"></i>
+
+                Secure & privacy-focused healthcare platform
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             RIGHT SIDE
+        =================================================== -->
+
+        <section class="auth-form-section">
+
+            <div class="auth-form-wrapper">
+
+
+                <!-- FORM HEADER -->
+
+                <div class="auth-form-header">
+
+                    <h2>
+                        Create Account
+                    </h2>
+
+                    <p>
+                        Enter your details to get started.
+                    </p>
+
+                </div>
+
+
+                <!-- ==================================================
+                     DJANGO MESSAGES
+                =================================================== -->
+
+                {% if messages %}
+
+                    <div class="auth-messages">
+
+                        {% for message in messages %}
+
+                            <div
+                                class="auth-message
+                                {% if message.tags %}
+                                    {{ message.tags }}
+                                {% endif %}"
+                            >
+
+                                <span class="message-icon">
+
+                                    {% if message.tags == "error" %}
+
+                                        <i class="fa-solid fa-circle-exclamation"></i>
+
+                                    {% else %}
+
+                                        <i class="fa-solid fa-circle-check"></i>
+
+                                    {% endif %}
+
+                                </span>
+
+
+                                <div class="message-content">
+
+                                    <strong>
+
+                                        {% if message.tags == "error" %}
+
+                                            Error
+
+                                        {% else %}
+
+                                            Success
+
+                                        {% endif %}
+
+                                    </strong>
+
+
+                                    <span>
+                                        {{ message }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- ==================================================
+                     REGISTRATION FORM
+                =================================================== -->
+
+                <form
+                    method="POST"
+                    class="auth-form"
+                    novalidate
+                >
+
+                    {% csrf_token %}
+
+
+                    <!-- USERNAME -->
+
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.username.id_for_label }}"
+                        >
+                            Username
+                        </label>
+
+
+                        <div class="input-wrapper">
+
+                            <i
+                                class="fa-solid fa-user input-icon"
+                            ></i>
+
+
+                            {{ form.username }}
+
+                        </div>
+
+
+                        {% if form.username.errors %}
+
+                            <div class="field-error">
+
+                                <i
+                                    class="fa-solid fa-circle-exclamation"
+                                ></i>
+
+                                <span>
+                                    {{ form.username.errors.0 }}
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.email.id_for_label }}"
+                        >
+                            Email Address
+                        </label>
+
+
+                        <div class="input-wrapper">
+
+                            <i
+                                class="fa-solid fa-envelope input-icon"
+                            ></i>
+
+
+                            {{ form.email }}
+
+                        </div>
+
+
+                        {% if form.email.errors %}
+
+                            <div class="field-error">
+
+                                <i
+                                    class="fa-solid fa-circle-exclamation"
+                                ></i>
+
+                                <span>
+                                    {{ form.email.errors.0 }}
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.phone_number.id_for_label }}"
+                        >
+                            Phone Number
+                        </label>
+
+
+                        <div class="input-wrapper">
+
+                            <i
+                                class="fa-solid fa-phone input-icon"
+                            ></i>
+
+
+                            {{ form.phone_number }}
+
+                        </div>
+
+
+                        {% if form.phone_number.errors %}
+
+                            <div class="field-error">
+
+                                <i
+                                    class="fa-solid fa-circle-exclamation"
+                                ></i>
+
+                                <span>
+                                    {{ form.phone_number.errors.0 }}
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.password.id_for_label }}"
+                        >
+                            Password
+                        </label>
+
+
+                        <div class="input-wrapper">
+
+                            <i
+                                class="fa-solid fa-lock input-icon"
+                            ></i>
+
+
+                            {{ form.password }}
+
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                onclick="togglePassword(
+                                    '{{ form.password.id_for_label }}',
+                                    this
+                                )"
+                                aria-label="Show password"
+                            >
+
+                                <i
+                                    class="fa-solid fa-eye"
+                                ></i>
+
+                            </button>
+
+                        </div>
+
+
+                        {% if form.password.errors %}
+
+                            <div class="field-error">
+
+                                <i
+                                    class="fa-solid fa-circle-exclamation"
+                                ></i>
+
+                                <span>
+                                    {{ form.password.errors.0 }}
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- CONFIRM PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label
+                            for="{{ form.confirm_password.id_for_label }}"
+                        >
+                            Confirm Password
+                        </label>
+
+
+                        <div class="input-wrapper">
+
+                            <i
+                                class="fa-solid fa-lock input-icon"
+                            ></i>
+
+
+                            {{ form.confirm_password }}
+
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                onclick="togglePassword(
+                                    '{{ form.confirm_password.id_for_label }}',
+                                    this
+                                )"
+                                aria-label="Show password"
+                            >
+
+                                <i
+                                    class="fa-solid fa-eye"
+                                ></i>
+
+                            </button>
+
+                        </div>
+
+
+                        {% if form.confirm_password.errors %}
+
+                            <div class="field-error">
+
+                                <i
+                                    class="fa-solid fa-circle-exclamation"
+                                ></i>
+
+                                <span>
+                                    {{ form.confirm_password.errors.0 }}
+                                </span>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         FACE ID INFORMATION
+                    =================================================== -->
+
+                    <div class="face-registration-box">
+
+
+                        <div class="face-registration-icon">
+
+                            <i
+                                class="fa-solid fa-face-smile"
+                            ></i>
+
+                        </div>
+
+
+                        <div class="face-registration-content">
+
+                            <strong>
+                                Face ID Registration
+                            </strong>
+
+                            <span>
+                                After creating your account,
+                                you will automatically continue
+                                to Face ID registration.
+                            </span>
+
+                        </div>
+
+
+                        <div class="face-registration-badge">
+
+                            <i
+                                class="fa-solid fa-shield-halved"
+                            ></i>
+
+                            Secure
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         TERMS
+                    =================================================== -->
+
+                    <div class="auth-terms">
+
+                        <i
+                            class="fa-solid fa-circle-info"
+                        ></i>
+
+                        <span>
+                            By creating an account, you agree
+                            to use the AI Health Assistant
+                            platform responsibly.
+                        </span>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         CREATE ACCOUNT BUTTON
+                    =================================================== -->
+
+                    <button
+                        type="submit"
+                        class="auth-submit-btn"
+                    >
+
+                        <span>
+                            Create Account
+                        </span>
+
+                        <i
+                            class="fa-solid fa-arrow-right"
+                        ></i>
+
+                    </button>
+
+                </form>
+
+
+                <!-- ==================================================
+                     LOGIN
+                =================================================== -->
+
+                <div class="auth-switch">
+
+                    Already have an account?
+
+                    <a href="{% url 'login' %}">
+                        Login
+                    </a>
+
+                </div>
+
+
+                <!-- ==================================================
+                     FOOTER
+                =================================================== -->
+
+                <div class="auth-form-footer">
+
+                    <i
+                        class="fa-solid fa-shield-halved"
+                    ></i>
+
+                    Your information is protected
+                    with secure authentication.
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script src="{% static 'js/auth.js' %}"></script>
+
+{% endblock %}

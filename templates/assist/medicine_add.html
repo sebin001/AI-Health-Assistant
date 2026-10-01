@@ -1,0 +1,1551 @@
+{% extends "assist/base.html" %}
+{% load static %}
+
+{% block title %}Add Medicine | AI Health Assistant{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================
+   MAIN MEDICINE PAGE
+   ========================================= */
+
+.medicine-page {
+    position: relative;
+    min-height: 100vh;
+    padding: 40px 20px;
+
+    overflow: hidden;
+    isolation: isolate;
+
+    background:
+        radial-gradient(
+            circle at 15% 20%,
+            rgba(20, 184, 166, 0.18),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 85% 75%,
+            rgba(56, 189, 248, 0.16),
+            transparent 30%
+        ),
+        linear-gradient(
+            135deg,
+            #f5fbff,
+            #eafafa,
+            #eef8ff
+        );
+}
+
+
+/* =========================================
+   BACKGROUND GLOW
+   ========================================= */
+
+.medicine-page::before,
+.medicine-page::after {
+    content: "";
+    position: absolute;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    z-index: -2;
+}
+
+.medicine-page::before {
+    width: 420px;
+    height: 420px;
+
+    top: -180px;
+    left: -150px;
+
+    background: rgba(45, 212, 191, 0.13);
+
+    filter: blur(12px);
+
+    animation:
+        backgroundFloat
+        9s
+        ease-in-out
+        infinite;
+}
+
+.medicine-page::after {
+    width: 500px;
+    height: 500px;
+
+    right: -220px;
+    bottom: -220px;
+
+    background: rgba(56, 189, 248, 0.13);
+
+    filter: blur(14px);
+
+    animation:
+        backgroundFloatReverse
+        11s
+        ease-in-out
+        infinite;
+}
+
+
+/* =========================================
+   FLOATING MEDICINE CONTAINER
+   ========================================= */
+
+.floating-medicines {
+    position: absolute;
+
+    inset: 0;
+
+    overflow: hidden;
+
+    pointer-events: none;
+
+    z-index: -1;
+}
+
+
+/* =========================================
+   COMMON FLOATING MEDICINE
+   ========================================= */
+
+.floating-medicine {
+    position: absolute;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(
+            0 12px 18px
+            rgba(15, 118, 110, 0.12)
+        );
+
+    animation:
+        medicineFloat
+        var(--duration)
+        ease-in-out
+        infinite;
+
+    animation-delay: var(--delay);
+}
+
+
+/* =========================================
+   CAPSULE
+   ========================================= */
+
+.floating-medicine.capsule {
+    width: 78px;
+    height: 34px;
+
+    border-radius: 50px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(20, 184, 166, 0.78) 50%,
+            rgba(255, 255, 255, 0.90) 50%
+        );
+
+    box-shadow:
+        inset 0 2px 5px rgba(255,255,255,0.75),
+        0 15px 30px rgba(15,118,110,0.12);
+
+    transform:
+        rotate(var(--rotation));
+}
+
+
+/* =========================================
+   SMALL PILL
+   ========================================= */
+
+.floating-medicine.pill {
+    width: 52px;
+    height: 22px;
+
+    border-radius: 30px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(56, 189, 248, 0.70),
+            rgba(255, 255, 255, 0.88)
+        );
+
+    box-shadow:
+        inset 0 2px 4px rgba(255,255,255,0.75),
+        0 10px 22px rgba(56,189,248,0.12);
+
+    transform:
+        rotate(var(--rotation));
+}
+
+
+/* =========================================
+   ROUND TABLET
+   ========================================= */
+
+.floating-medicine.tablet {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            #ffffff,
+            rgba(20, 184, 166, 0.55)
+        );
+
+    box-shadow:
+        inset 0 2px 5px rgba(255,255,255,0.85),
+        0 12px 25px rgba(15,118,110,0.10);
+
+    transform:
+        rotate(var(--rotation));
+}
+
+
+/* =========================================
+   MEDICINE ICON
+   ========================================= */
+
+.floating-medicine.icon {
+    width: 62px;
+    height: 62px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(255,255,255,0.48);
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    color:
+        rgba(15,118,110,0.30);
+
+    font-size: 28px;
+
+    box-shadow:
+        0 15px 35px
+        rgba(15,118,110,0.08);
+
+    transform:
+        rotate(var(--rotation));
+}
+
+
+/* =========================================
+   FLOATING POSITIONS
+   ========================================= */
+
+.fm-1 {
+    top: 12%;
+    left: 4%;
+
+    --duration: 8s;
+    --delay: -2s;
+    --rotation: -25deg;
+}
+
+.fm-2 {
+    top: 31%;
+    left: 10%;
+
+    --duration: 11s;
+    --delay: -6s;
+    --rotation: 18deg;
+}
+
+.fm-3 {
+    top: 67%;
+    left: 4%;
+
+    --duration: 9s;
+    --delay: -4s;
+    --rotation: -35deg;
+}
+
+.fm-4 {
+    top: 17%;
+    right: 7%;
+
+    --duration: 10s;
+    --delay: -3s;
+    --rotation: 28deg;
+}
+
+.fm-5 {
+    top: 49%;
+    right: 4%;
+
+    --duration: 12s;
+    --delay: -8s;
+    --rotation: -20deg;
+}
+
+.fm-6 {
+    top: 78%;
+    right: 12%;
+
+    --duration: 9s;
+    --delay: -5s;
+    --rotation: 35deg;
+}
+
+.fm-7 {
+    top: 87%;
+    left: 18%;
+
+    --duration: 13s;
+    --delay: -9s;
+    --rotation: -15deg;
+}
+
+.fm-8 {
+    top: 7%;
+    right: 28%;
+
+    --duration: 11s;
+    --delay: -7s;
+    --rotation: 20deg;
+}
+
+
+/* =========================================
+   FLOATING ANIMATION
+   ========================================= */
+
+@keyframes medicineFloat {
+
+    0% {
+        transform:
+            translate3d(0, 0, 0)
+            rotate(var(--rotation));
+    }
+
+    25% {
+        transform:
+            translate3d(18px, -25px, 0)
+            rotate(
+                calc(var(--rotation) + 8deg)
+            );
+    }
+
+    50% {
+        transform:
+            translate3d(-12px, -45px, 0)
+            rotate(
+                calc(var(--rotation) - 5deg)
+            );
+    }
+
+    75% {
+        transform:
+            translate3d(22px, -20px, 0)
+            rotate(
+                calc(var(--rotation) + 6deg)
+            );
+    }
+
+    100% {
+        transform:
+            translate3d(0, 0, 0)
+            rotate(var(--rotation));
+    }
+
+}
+
+
+/* =========================================
+   BACKGROUND ANIMATION
+   ========================================= */
+
+@keyframes backgroundFloat {
+
+    0%,
+    100% {
+        transform:
+            translate(0, 0);
+    }
+
+    50% {
+        transform:
+            translate(60px, 40px);
+    }
+
+}
+
+@keyframes backgroundFloatReverse {
+
+    0%,
+    100% {
+        transform:
+            translate(0, 0);
+    }
+
+    50% {
+        transform:
+            translate(-70px, -50px);
+    }
+
+}
+
+
+/* =========================================
+   MEDICINE CONTAINER
+   ========================================= */
+
+.medicine-container {
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 1050px;
+
+    margin: 0 auto;
+}
+
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.medicine-header {
+    margin-bottom: 28px;
+}
+
+.medicine-header .back-link {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #0f766e;
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+    margin-bottom: 18px;
+
+    transition: 0.3s;
+}
+
+.medicine-header .back-link:hover {
+    transform:
+        translateX(-4px);
+}
+
+.medicine-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+}
+
+.medicine-title-icon {
+    width: 58px;
+    height: 58px;
+
+    border-radius: 17px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #14b8a6
+        );
+
+    color: white;
+
+    font-size: 25px;
+
+    box-shadow:
+        0 12px 25px
+        rgba(15,118,110,0.20);
+
+    animation:
+        titleIconFloat
+        4s
+        ease-in-out
+        infinite;
+}
+
+@keyframes titleIconFloat {
+
+    0%,
+    100% {
+        transform:
+            translateY(0);
+    }
+
+    50% {
+        transform:
+            translateY(-5px);
+    }
+
+}
+
+.medicine-title h1 {
+    margin: 0;
+
+    color: #102a43;
+
+    font-size: 30px;
+}
+
+.medicine-title p {
+    margin: 5px 0 0;
+
+    color: #64748b;
+}
+
+
+/* =========================================
+   CARD
+   ========================================= */
+
+.medicine-card {
+    position: relative;
+
+    background:
+        rgba(255,255,255,0.91);
+
+    border:
+        1px solid
+        rgba(148,163,184,0.20);
+
+    border-radius: 24px;
+
+    padding: 34px;
+
+    box-shadow:
+        0 20px 55px
+        rgba(15,23,42,0.08);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    animation:
+        cardEnter
+        0.6s
+        ease;
+}
+
+@keyframes cardEnter {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+
+/* =========================================
+   GRID
+   ========================================= */
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 24px;
+}
+
+.form-group {
+    display: flex;
+
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+
+/* =========================================
+   LABELS
+   ========================================= */
+
+.form-label {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 9px;
+
+    color: #334155;
+
+    font-weight: 700;
+
+    font-size: 14px;
+}
+
+.form-label i {
+    color: #0f766e;
+}
+
+
+/* =========================================
+   INPUTS
+   ========================================= */
+
+.form-input {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 13px 15px;
+
+    border:
+        1px solid
+        #d8e2ea;
+
+    border-radius: 12px;
+
+    background:
+        rgba(248,250,252,0.92);
+
+    color: #1e293b;
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition:
+        0.3s;
+}
+
+.form-input:hover {
+    border-color:
+        #99f6e4;
+}
+
+.form-input:focus {
+    border-color:
+        #14b8a6;
+
+    background:
+        white;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(20,184,166,0.10);
+}
+
+
+/* =========================================
+   ERRORS
+   ========================================= */
+
+.field-error {
+    margin-top: 7px;
+
+    color: #dc2626;
+
+    font-size: 13px;
+}
+
+
+/* =========================================
+   EMAIL REMINDER
+   ========================================= */
+
+.reminder-box {
+    grid-column: 1 / -1;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 18px 20px;
+
+    border-radius: 15px;
+
+    background:
+        rgba(240,253,250,0.90);
+
+    border:
+        1px solid
+        #ccfbf1;
+
+    transition:
+        0.3s;
+}
+
+.reminder-box:hover {
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 10px 25px
+        rgba(15,118,110,0.08);
+}
+
+.reminder-content {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+}
+
+.reminder-icon {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 12px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        #ccfbf1;
+
+    color:
+        #0f766e;
+}
+
+.reminder-text strong {
+    display: block;
+
+    color:
+        #134e4a;
+
+    margin-bottom: 3px;
+}
+
+.reminder-text span {
+    color:
+        #64748b;
+
+    font-size: 13px;
+}
+
+
+/* =========================================
+   CHECKBOX
+   ========================================= */
+
+.form-checkbox {
+    width: 20px;
+    height: 20px;
+
+    accent-color:
+        #0f766e;
+
+    cursor: pointer;
+}
+
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+
+.form-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    margin-top: 30px;
+
+    padding-top: 25px;
+
+    border-top:
+        1px solid
+        #e2e8f0;
+}
+
+.btn {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 9px;
+
+    padding: 13px 22px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    border: none;
+
+    font-weight: 700;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition:
+        0.3s;
+}
+
+.btn-cancel {
+    background:
+        #f1f5f9;
+
+    color:
+        #475569;
+}
+
+.btn-cancel:hover {
+    background:
+        #e2e8f0;
+
+    transform:
+        translateY(-2px);
+}
+
+.btn-save {
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #14b8a6
+        );
+
+    color: white;
+
+    box-shadow:
+        0 10px 22px
+        rgba(15,118,110,0.20);
+}
+
+.btn-save:hover {
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 14px 28px
+        rgba(15,118,110,0.28);
+}
+
+
+/* =========================================
+   MESSAGES
+   ========================================= */
+
+.message {
+    padding: 14px 18px;
+
+    border-radius: 12px;
+
+    margin-bottom: 20px;
+
+    font-weight: 600;
+
+    animation:
+        messageEnter
+        0.4s
+        ease;
+}
+
+@keyframes messageEnter {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+.message.success {
+    background:
+        #ecfdf5;
+
+    color:
+        #047857;
+
+    border:
+        1px solid
+        #a7f3d0;
+}
+
+.message.error {
+    background:
+        #fef2f2;
+
+    color:
+        #b91c1c;
+
+    border:
+        1px solid
+        #fecaca;
+}
+
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 900px) {
+
+    .floating-medicine {
+        opacity: 0.55;
+    }
+
+    .fm-1 {
+        left: -10px;
+    }
+
+    .fm-3 {
+        left: -15px;
+    }
+
+    .fm-5 {
+        right: -10px;
+    }
+
+    .fm-6 {
+        right: -5px;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .medicine-page {
+        padding: 25px 15px;
+    }
+
+    .medicine-card {
+        padding: 22px;
+
+        border-radius: 18px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full-width,
+    .reminder-box {
+        grid-column: auto;
+    }
+
+    .medicine-title h1 {
+        font-size: 24px;
+    }
+
+    .medicine-title p {
+        font-size: 14px;
+    }
+
+    .medicine-title-icon {
+        width: 50px;
+        height: 50px;
+
+        font-size: 21px;
+    }
+
+    .reminder-box {
+        align-items: flex-start;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    /* Keep background subtle on small screens */
+
+    .floating-medicine.capsule {
+        width: 55px;
+        height: 25px;
+    }
+
+    .floating-medicine.pill {
+        width: 40px;
+        height: 17px;
+    }
+
+    .floating-medicine.tablet {
+        width: 28px;
+        height: 28px;
+    }
+
+    .floating-medicine.icon {
+        width: 45px;
+        height: 45px;
+
+        font-size: 21px;
+    }
+
+}
+
+
+/* =========================================
+   ACCESSIBILITY
+   ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .floating-medicine,
+    .medicine-page::before,
+    .medicine-page::after,
+    .medicine-title-icon,
+    .medicine-card,
+    .message {
+        animation: none;
+    }
+
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="medicine-page">
+
+
+    <!-- =====================================
+         FLOATING MEDICINE BACKGROUND
+         ===================================== -->
+
+    <div
+        class="floating-medicines"
+        aria-hidden="true"
+    >
+
+        <!-- Capsule -->
+
+        <div
+            class="floating-medicine capsule fm-1"
+        ></div>
+
+
+        <!-- Small Pill -->
+
+        <div
+            class="floating-medicine pill fm-2"
+        ></div>
+
+
+        <!-- Tablet -->
+
+        <div
+            class="floating-medicine tablet fm-3"
+        ></div>
+
+
+        <!-- Pills Icon -->
+
+        <div
+            class="floating-medicine icon fm-4"
+        >
+            <i class="fa-solid fa-pills"></i>
+        </div>
+
+
+        <!-- Capsule -->
+
+        <div
+            class="floating-medicine capsule fm-5"
+        ></div>
+
+
+        <!-- Small Pill -->
+
+        <div
+            class="floating-medicine pill fm-6"
+        ></div>
+
+
+        <!-- Tablet -->
+
+        <div
+            class="floating-medicine tablet fm-7"
+        ></div>
+
+
+        <!-- Capsules Icon -->
+
+        <div
+            class="floating-medicine icon fm-8"
+        >
+            <i class="fa-solid fa-capsules"></i>
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         MAIN CONTAINER
+         ===================================== -->
+
+    <div class="medicine-container">
+
+
+        <!-- =================================
+             HEADER
+             ================================= -->
+
+        <div class="medicine-header">
+
+
+            <!-- Back -->
+
+            <a
+                href="{% url 'dashboard' %}"
+                class="back-link"
+            >
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                Back to Dashboard
+
+            </a>
+
+
+            <!-- Title -->
+
+            <div class="medicine-title">
+
+
+                <div class="medicine-title-icon">
+
+                    <i class="fa-solid fa-pills"></i>
+
+                </div>
+
+
+                <div>
+
+                    <h1>
+                        Add Medicine Reminder
+                    </h1>
+
+                    <p>
+                        Keep track of your medicines and never miss a dose.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================
+             MESSAGES
+             ================================= -->
+
+        {% if messages %}
+
+            {% for message in messages %}
+
+                <div
+                    class="message
+                    {% if message.tags %}
+                        {{ message.tags }}
+                    {% endif %}"
+                >
+
+                    {{ message }}
+
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        <!-- =================================
+             MEDICINE FORM CARD
+             ================================= -->
+
+        <div class="medicine-card">
+
+
+            <form
+                method="POST"
+            >
+
+                {% csrf_token %}
+
+
+                <div class="form-grid">
+
+
+                    <!-- =====================
+                         MEDICINE NAME
+                         ===================== -->
+
+                    <div class="form-group">
+
+                        <label
+                            class="form-label"
+                            for="{{ form.medicine_name.id_for_label }}"
+                        >
+
+                            <i class="fa-solid fa-capsules"></i>
+
+                            Medicine Name
+
+                        </label>
+
+
+                        {{ form.medicine_name }}
+
+
+                        {% for error in form.medicine_name.errors %}
+
+                            <div class="field-error">
+
+                                {{ error }}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- =====================
+                         DOSAGE
+                         ===================== -->
+
+                    <div class="form-group">
+
+                        <label
+                            class="form-label"
+                            for="{{ form.dosage.id_for_label }}"
+                        >
+
+                            <i class="fa-solid fa-prescription-bottle-medical"></i>
+
+                            Dosage
+
+                        </label>
+
+
+                        {{ form.dosage }}
+
+
+                        {% for error in form.dosage.errors %}
+
+                            <div class="field-error">
+
+                                {{ error }}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- =====================
+                         FREQUENCY
+                         ===================== -->
+
+                    <div class="form-group">
+
+                        <label
+                            class="form-label"
+                            for="{{ form.frequency.id_for_label }}"
+                        >
+
+                            <i class="fa-solid fa-repeat"></i>
+
+                            Frequency
+
+                        </label>
+
+
+                        {{ form.frequency }}
+
+
+                        {% for error in form.frequency.errors %}
+
+                            <div class="field-error">
+
+                                {{ error }}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- =====================
+                         REMINDER TIME
+                         ===================== -->
+
+                    <div class="form-group">
+
+                        <label
+                            class="form-label"
+                            for="{{ form.reminder_time.id_for_label }}"
+                        >
+
+                            <i class="fa-solid fa-clock"></i>
+
+                            Reminder Time
+
+                        </label>
+
+
+                        {{ form.reminder_time }}
+
+
+                        {% for error in form.reminder_time.errors %}
+
+                            <div class="field-error">
+
+                                {{ error }}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- =====================
+                         START DATE
+                         ===================== -->
+
+                    <div class="form-group">
+
+                        <label
+                            class="form-label"
+                            for="{{ form.start_date.id_for_label }}"
+                        >
+
+                            <i class="fa-solid fa-calendar-day"></i>
+
+                            Start Date
+
+                        </label>
+
+
+                        {{ form.start_date }}
+
+
+                        {% for error in form.start_date.errors %}
+
+                            <div class="field-error">
+
+                                {{ error }}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- =====================
+                         END DATE
+                         ===================== -->
+
+                    <div class="form-group">
+
+                        <label
+                            class="form-label"
+                            for="{{ form.end_date.id_for_label }}"
+                        >
+
+                            <i class="fa-solid fa-calendar-check"></i>
+
+                            End Date
+
+                        </label>
+
+
+                        {{ form.end_date }}
+
+
+                        {% for error in form.end_date.errors %}
+
+                            <div class="field-error">
+
+                                {{ error }}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- =====================
+                         EMAIL REMINDER
+                         ===================== -->
+
+                    <div class="reminder-box">
+
+
+                        <div class="reminder-content">
+
+
+                            <div class="reminder-icon">
+
+                                <i class="fa-solid fa-envelope"></i>
+
+                            </div>
+
+
+                            <div class="reminder-text">
+
+                                <strong>
+                                    Email Reminder
+                                </strong>
+
+                                <span>
+                                    Receive a reminder by email for this medicine.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        {{ form.email_reminder }}
+
+                    </div>
+
+
+                    <!-- =====================
+                         NOTES
+                         ===================== -->
+
+                    <div class="form-group full-width">
+
+                        <label
+                            class="form-label"
+                            for="{{ form.notes.id_for_label }}"
+                        >
+
+                            <i class="fa-solid fa-note-sticky"></i>
+
+                            Notes
+
+                        </label>
+
+
+                        {{ form.notes }}
+
+
+                        {% for error in form.notes.errors %}
+
+                            <div class="field-error">
+
+                                {{ error }}
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================
+                     ACTION BUTTONS
+                     ================================= -->
+
+                <div class="form-actions">
+
+
+                    <a
+                        href="{% url 'dashboard' %}"
+                        class="btn btn-cancel"
+                    >
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                        Cancel
+
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="btn btn-save"
+                    >
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Save Medicine
+
+                    </button>
+
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,495 @@
+{% extends "assist/base.html" %}
+
+{% load static %}
+
+{% block title %}
+My Appointments | AI Health Assistant
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/my_appointments.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="my-appointments-page">
+
+    <!-- Header -->
+    <section class="appointments-page-header">
+
+        <div class="appointments-header-icon">
+            <i class="fa-solid fa-calendar-check"></i>
+        </div>
+
+        <div>
+            <span class="appointments-eyebrow">
+                HEALTHCARE APPOINTMENTS
+            </span>
+
+            <h1>My Appointments</h1>
+
+            <p>
+                View and manage your scheduled doctor appointments.
+            </p>
+        </div>
+
+    </section>
+
+
+    <!-- Appointment Count -->
+    <div class="appointment-count">
+
+        <i class="fa-solid fa-calendar-days"></i>
+
+        <span>
+            {{ appointments|length }}
+            appointment{{ appointments|length|pluralize }}
+        </span>
+
+    </div>
+
+
+    {% if appointments %}
+
+        <div class="appointments-list">
+
+            {% for appointment in appointments %}
+
+                <article class="appointment-card">
+
+                    <!-- Card Top -->
+                    <div class="appointment-card-top">
+
+                        <div class="doctor-section">
+
+                            <div class="doctor-avatar">
+                                <i class="fa-solid fa-user-doctor"></i>
+                            </div>
+
+                            <div class="doctor-details">
+
+                                <h2>
+                                    {{ appointment.doctor.name }}
+                                </h2>
+
+                                <p class="specialization">
+                                    <i class="fa-solid fa-stethoscope"></i>
+                                    {{ appointment.doctor.specialization }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Status -->
+                        <div class="status-badge status-{{ appointment.status|lower }}">
+
+                            {% if appointment.status == "Pending" %}
+
+                                <i class="fa-regular fa-clock"></i>
+
+                            {% elif appointment.status == "Confirmed" %}
+
+                                <i class="fa-solid fa-circle-check"></i>
+
+                            {% elif appointment.status == "Completed" %}
+
+                                <i class="fa-solid fa-check-double"></i>
+
+                            {% elif appointment.status == "Cancelled" %}
+
+                                <i class="fa-solid fa-circle-xmark"></i>
+
+                            {% endif %}
+
+                            <span>
+                                {{ appointment.status }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Hospital -->
+                    <div class="hospital-section">
+
+                        <div class="hospital-icon">
+                            <i class="fa-solid fa-hospital"></i>
+                        </div>
+
+                        <div>
+
+                            <span class="detail-label">
+                                Hospital
+                            </span>
+
+                            <strong>
+                                {{ appointment.doctor.hospital.name }}
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Appointment Details -->
+                    <div class="appointment-details-grid">
+
+                        <div class="appointment-detail">
+
+                            <div class="detail-icon">
+                                <i class="fa-solid fa-calendar-day"></i>
+                            </div>
+
+                            <div>
+
+                                <span class="detail-label">
+                                    Date
+                                </span>
+
+                                <strong>
+                                    {{ appointment.appointment_date|date:"d F Y" }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="appointment-detail">
+
+                            <div class="detail-icon">
+                                <i class="fa-regular fa-clock"></i>
+                            </div>
+
+                            <div>
+
+                                <span class="detail-label">
+                                    Time
+                                </span>
+
+                                <strong>
+                                    {{ appointment.appointment_time|time:"h:i A" }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="appointment-detail fee-detail">
+
+                            <div class="detail-icon">
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                            </div>
+
+                            <div>
+
+                                <span class="detail-label">
+                                    Consultation Fee
+                                </span>
+
+                                <strong>
+                                    {% if appointment.doctor.consultation_fee %}
+                                    ₹{{ appointment.doctor.consultation_fee|floatformat:2 }}
+                                    {% else %}
+                                    Not specified
+                                    {% endif %}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Notes -->
+                    {% if appointment.patient_notes %}
+
+                        <div class="patient-notes">
+
+                            <div class="notes-icon">
+                                <i class="fa-regular fa-note-sticky"></i>
+                            </div>
+
+                            <div>
+
+                                <span class="detail-label">
+                                    Patient Notes
+                                </span>
+
+                                <p>
+                                    {{ appointment.patient_notes }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <!-- Footer -->
+                    <div class="appointment-card-footer">
+
+                        <div class="appointment-id">
+
+                            <i class="fa-solid fa-hashtag"></i>
+
+                            Appointment ID:
+                            <strong>
+                                {{ appointment.id }}
+                            </strong>
+
+                        </div>
+
+
+                        <div class="appointment-actions">
+
+                            {% if appointment.status == "Pending" or appointment.status == "Confirmed" %}
+
+                                <button
+                                    type="button"
+                                    class="cancel-appointment-btn"
+                                    data-appointment-id="{{ appointment.id }}"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                    Cancel
+                                </button>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+
+    {% else %}
+
+        <!-- Empty State -->
+
+        <section class="empty-appointments">
+
+            <div class="empty-appointments-icon">
+                <i class="fa-regular fa-calendar-xmark"></i>
+            </div>
+
+            <h2>
+                No appointments yet
+            </h2>
+
+            <p>
+                You haven't booked any doctor appointments.
+                Your upcoming appointments will appear here.
+            </p>
+
+            <a
+                href="{% url 'appointments_view' %}"
+                class="find-doctor-btn"
+            >
+                <i class="fa-solid fa-user-doctor"></i>
+                Find a Doctor
+            </a>
+
+        </section>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const cancelButtons =
+            document.querySelectorAll(
+                ".cancel-appointment-btn"
+            );
+
+
+        cancelButtons.forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    async function () {
+
+                        const appointmentId =
+                            button.dataset.appointmentId;
+
+
+                        const confirmed =
+                            window.confirm(
+                                "Are you sure you want to cancel this appointment?"
+                            );
+
+
+                        if (!confirmed) {
+                            return;
+                        }
+
+
+                        button.disabled =
+                            true;
+
+
+                        button.innerHTML = `
+                            <span class="small-spinner"></span>
+                            Cancelling...
+                        `;
+
+
+                        try {
+
+                            const response =
+                                await fetch(
+                                    `/appointments/${appointmentId}/cancel/`,
+                                    {
+                                        method: "POST",
+
+                                        headers: {
+                                            "X-CSRFToken":
+                                                getCookie(
+                                                    "csrftoken"
+                                                )
+                                        }
+                                    }
+                                );
+
+
+                            const data =
+                                await response.json();
+
+
+                            if (
+                                !response.ok ||
+                                !data.success
+                            ) {
+
+                                alert(
+                                    data.message ||
+                                    "Unable to cancel the appointment."
+                                );
+
+
+                                button.disabled =
+                                    false;
+
+                                button.innerHTML = `
+                                    <i class="fa-solid fa-xmark"></i>
+                                    Cancel
+                                `;
+
+                                return;
+
+                            }
+
+
+                            window.location.reload();
+
+                        }
+
+                        catch (error) {
+
+                            console.error(
+                                "Cancellation error:",
+                                error
+                            );
+
+
+                            alert(
+                                "Something went wrong. Please try again."
+                            );
+
+
+                            button.disabled =
+                                false;
+
+                            button.innerHTML = `
+                                <i class="fa-solid fa-xmark"></i>
+                                Cancel
+                            `;
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+        function getCookie(name) {
+
+            let cookieValue = null;
+
+
+            if (
+                document.cookie &&
+                document.cookie !== ""
+            ) {
+
+                const cookies =
+                    document.cookie.split(";");
+
+
+                for (
+                    let i = 0;
+                    i < cookies.length;
+                    i++
+                ) {
+
+                    const cookie =
+                        cookies[i].trim();
+
+
+                    if (
+                        cookie.substring(
+                            0,
+                            name.length + 1
+                        ) ===
+                        (name + "=")
+                    ) {
+
+                        cookieValue =
+                            decodeURIComponent(
+                                cookie.substring(
+                                    name.length + 1
+                                )
+                            );
+
+                        break;
+
+                    }
+
+                }
+
+            }
+
+
+            return cookieValue;
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}

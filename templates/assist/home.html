@@ -1,0 +1,953 @@
+{% extends "assist/base.html" %}
+{% load static %}
+
+{% block title %}Home | AI Health Assistant{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* =========================================================
+   HOME HERO SECTION
+   ========================================================= */
+
+.hero {
+    position: relative;
+    min-height: 650px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 60px;
+    padding: 90px 8%;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(4, 18, 32, 0.96) 0%,
+            rgba(4, 24, 40, 0.88) 38%,
+            rgba(4, 24, 40, 0.55) 68%,
+            rgba(4, 24, 40, 0.30) 100%
+        ),
+        url("{% static 'images/ai.png' %}");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+/* =========================================================
+   BACKGROUND DECORATION
+   ========================================================= */
+
+.hero::before {
+    content: "";
+
+    position: absolute;
+
+    width: 450px;
+    height: 450px;
+
+    right: -100px;
+    top: 80px;
+
+    border-radius: 50%;
+
+    background: rgba(31, 211, 193, 0.16);
+
+    filter: blur(100px);
+
+    animation: heroGlow 6s ease-in-out infinite alternate;
+
+    pointer-events: none;
+}
+
+.hero::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent 30%,
+            rgba(57, 220, 205, 0.04) 50%,
+            transparent 70%
+        );
+
+    animation: lightSweep 8s linear infinite;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   HERO CONTENT
+   ========================================================= */
+
+.hero-content {
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 680px;
+}
+
+
+.hero-badge {
+    display: inline-flex;
+
+    align-items: center;
+    gap: 9px;
+
+    padding: 10px 18px;
+
+    border: 1px solid rgba(83, 225, 211, 0.40);
+
+    border-radius: 50px;
+
+    background: rgba(15, 180, 165, 0.10);
+
+    color: #69e5d8;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.5px;
+
+    margin-bottom: 25px;
+
+    backdrop-filter: blur(10px);
+
+    animation: badgeAppear 0.8s ease forwards;
+}
+
+
+.hero-badge::first-letter {
+    color: #52e4d6;
+}
+
+
+/* =========================================================
+   HERO TITLE
+   ========================================================= */
+
+.hero h1 {
+    margin: 0 0 25px;
+
+    color: #ffffff;
+
+    font-size: clamp(48px, 6vw, 78px);
+
+    line-height: 1.05;
+
+    font-weight: 800;
+
+    letter-spacing: -2px;
+
+    animation: titleAppear 0.9s ease forwards;
+}
+
+
+.hero h1 span {
+    display: inline-block;
+
+    color: #48d8ca;
+
+    position: relative;
+}
+
+
+.hero h1 span::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    bottom: -7px;
+
+    width: 100%;
+    height: 3px;
+
+    border-radius: 10px;
+
+    background: #48d8ca;
+
+    transform: scaleX(0);
+
+    transform-origin: left;
+
+    animation: underlineReveal 1.2s ease 0.7s forwards;
+}
+
+
+/* =========================================================
+   HERO DESCRIPTION
+   ========================================================= */
+
+.hero-content > p {
+    max-width: 620px;
+
+    margin: 0 0 35px;
+
+    color: rgba(255, 255, 255, 0.78);
+
+    font-size: 18px;
+
+    line-height: 1.8;
+
+    animation: textAppear 1s ease 0.2s both;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.hero-buttons {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+
+    animation: buttonsAppear 1s ease 0.4s both;
+}
+
+
+.hero-buttons .btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 170px;
+
+    padding: 14px 24px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        background 0.3s ease;
+}
+
+
+.btn-primary {
+    color: #ffffff;
+
+    background: linear-gradient(
+        135deg,
+        #19b8aa,
+        #087f8c
+    );
+
+    box-shadow:
+        0 10px 30px rgba(19, 184, 170, 0.25);
+}
+
+
+.btn-primary:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 15px 40px rgba(19, 184, 170, 0.40);
+}
+
+
+.btn-secondary {
+    color: #ffffff;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    border: 1px solid rgba(255, 255, 255, 0.20);
+
+    backdrop-filter: blur(12px);
+}
+
+
+.btn-secondary:hover {
+    transform: translateY(-4px);
+
+    background: rgba(255, 255, 255, 0.14);
+
+    border-color: rgba(72, 216, 202, 0.50);
+}
+
+
+/* =========================================================
+   AI ASSISTANT CARD
+   ========================================================= */
+
+.hero-card {
+    position: relative;
+
+    z-index: 2;
+
+    width: 330px;
+
+    flex-shrink: 0;
+
+    padding: 35px;
+
+    border-radius: 25px;
+
+    background: rgba(255, 255, 255, 0.10);
+
+    border: 1px solid rgba(255, 255, 255, 0.20);
+
+    backdrop-filter: blur(18px);
+
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.35);
+
+    animation:
+        floatingCard 5s ease-in-out infinite,
+        cardAppear 1s ease 0.5s both;
+}
+
+
+.hero-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 20px;
+    right: 20px;
+
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #48d8ca,
+        transparent
+    );
+
+    opacity: 0.8;
+}
+
+
+.card-icon {
+    width: 62px;
+    height: 62px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background: linear-gradient(
+        135deg,
+        #19b8aa,
+        #087f8c
+    );
+
+    color: #ffffff;
+
+    font-size: 28px;
+
+    margin-bottom: 22px;
+
+    box-shadow:
+        0 10px 30px rgba(19, 184, 170, 0.25);
+
+    animation: iconPulse 3s ease-in-out infinite;
+}
+
+
+.hero-card h2 {
+    margin: 0 0 12px;
+
+    color: #ffffff;
+
+    font-size: 24px;
+}
+
+
+.hero-card p {
+    margin: 0 0 25px;
+
+    color: rgba(255, 255, 255, 0.72);
+
+    font-size: 15px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+
+    color: #75eadf;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.status span {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #42e8d1;
+
+    box-shadow:
+        0 0 10px #42e8d1;
+
+    animation: statusPulse 1.8s infinite;
+}
+
+
+/* =========================================================
+   FEATURES SECTION
+   ========================================================= */
+
+.features {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 25px;
+
+    padding: 70px 8%;
+
+    background: #f5f9fb;
+
+    overflow: hidden;
+}
+
+
+.feature-card {
+    position: relative;
+
+    padding: 32px;
+
+    border-radius: 22px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5eef2;
+
+    box-shadow:
+        0 15px 40px rgba(10, 45, 65, 0.07);
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        border-color 0.35s ease;
+
+    overflow: hidden;
+}
+
+
+.feature-card::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 3px;
+
+    background: linear-gradient(
+        90deg,
+        #19b8aa,
+        #48d8ca
+    );
+
+    transform: scaleX(0);
+
+    transform-origin: left;
+
+    transition: transform 0.4s ease;
+}
+
+
+.feature-card:hover {
+    transform: translateY(-8px);
+
+    box-shadow:
+        0 25px 55px rgba(10, 45, 65, 0.12);
+
+    border-color: rgba(25, 184, 170, 0.30);
+}
+
+
+.feature-card:hover::before {
+    transform: scaleX(1);
+}
+
+
+.feature-icon {
+    width: 55px;
+    height: 55px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 20px;
+
+    border-radius: 16px;
+
+    background: rgba(25, 184, 170, 0.10);
+
+    color: #119d91;
+
+    font-size: 24px;
+}
+
+
+.feature-card h3 {
+    margin: 0 0 10px;
+
+    color: #102d40;
+
+    font-size: 19px;
+}
+
+
+.feature-card p {
+    margin: 0;
+
+    color: #667b88;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+
+@keyframes floatingCard {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+
+@keyframes heroGlow {
+
+    0% {
+        transform: scale(0.85);
+        opacity: 0.35;
+    }
+
+    100% {
+        transform: scale(1.15);
+        opacity: 0.85;
+    }
+}
+
+
+@keyframes lightSweep {
+
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+
+@keyframes badgeAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes titleAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes textAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes buttonsAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes cardAppear {
+
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+@keyframes underlineReveal {
+
+    to {
+        transform: scaleX(1);
+    }
+}
+
+
+@keyframes iconPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+
+@keyframes statusPulse {
+
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 950px) {
+
+    .hero {
+        flex-direction: column;
+
+        text-align: center;
+
+        padding: 80px 6%;
+    }
+
+
+    .hero-content {
+        max-width: 750px;
+    }
+
+
+    .hero-content > p {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+
+    .hero-card {
+        width: min(100%, 360px);
+    }
+
+
+    .features {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .hero {
+        min-height: auto;
+
+        padding: 65px 5%;
+
+        background-position: 65% center;
+    }
+
+
+    .hero h1 {
+        font-size: 45px;
+
+        letter-spacing: -1px;
+    }
+
+
+    .hero-content > p {
+        font-size: 16px;
+    }
+
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+
+    .hero-buttons .btn {
+        width: 100%;
+    }
+
+
+    .hero-card {
+        padding: 28px;
+    }
+
+
+    .features {
+        padding: 50px 5%;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .hero *,
+    .hero::before,
+    .hero::after,
+    .feature-card {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+</style>
+
+
+<!-- =======================================================
+     HERO
+======================================================= -->
+
+<section class="hero">
+
+    <div class="hero-content">
+
+        <span class="hero-badge">
+            <i class="fa-solid fa-circle"></i>
+            SMART HEALTH TECHNOLOGY
+        </span>
+
+        <h1>
+            Your Health,
+            <span>Smarter.</span>
+        </h1>
+
+        <p>
+            AI-powered healthcare assistance designed to help you
+            manage your health, medicines, appointments and more
+            from one secure place.
+        </p>
+
+        <div class="hero-buttons">
+
+            <a href="{% url 'register' %}" class="btn btn-primary">
+                <i class="fa-solid fa-user-plus"></i>
+                &nbsp; Get Started
+            </a>
+
+            <a href="{% url 'login' %}" class="btn btn-secondary">
+                <i class="fa-solid fa-robot"></i>
+                &nbsp; Explore AI Assistant
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- AI ASSISTANT GLASS CARD -->
+
+    <div class="hero-card">
+
+        <div class="card-icon">
+            <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+
+        <h2>
+            AI Health Assistant
+        </h2>
+
+        <p>
+            Intelligent health guidance available whenever
+            you need it, helping you stay organized and
+            informed about your health.
+        </p>
+
+        <div class="status">
+
+            <span></span>
+
+            AI Assistant Ready
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =======================================================
+     FEATURES
+======================================================= -->
+
+<section class="features">
+
+    <div class="feature-card">
+
+        <div class="feature-icon">
+            <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+
+        <h3>
+            Health Management
+        </h3>
+
+        <p>
+            Keep your important health information organized
+            and accessible from your account.
+        </p>
+
+    </div>
+
+
+    <div class="feature-card">
+
+        <div class="feature-icon">
+            <i class="fa-solid fa-pills"></i>
+        </div>
+
+        <h3>
+            Medicine Reminders
+        </h3>
+
+        <p>
+            Stay on schedule with your medicines and
+            personalized reminder notifications.
+        </p>
+
+    </div>
+
+
+    <div class="feature-card">
+
+        <div class="feature-icon">
+            <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <h3>
+            AI Assistance
+        </h3>
+
+        <p>
+            Get useful health information through your
+            AI-powered health assistant.
+        </p>
+
+    </div>
+
+</section>
+
+{% endblock %}

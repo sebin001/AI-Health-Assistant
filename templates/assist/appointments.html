@@ -1,0 +1,1325 @@
+{% extends "assist/base.html" %}
+
+{% load static %}
+
+{% block title %}Book Appointment | AI Health Assistant{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/appointments.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="appointments-page">
+
+    <!-- Page Header -->
+    <section class="appointment-header">
+
+        <div class="appointment-header-icon">
+            <i class="fa-solid fa-calendar-check"></i>
+        </div>
+
+        <div>
+            <span class="appointment-eyebrow">
+                HEALTHCARE SERVICES
+            </span>
+
+            <h1>Book an Appointment</h1>
+
+            <p>
+                Find a doctor, choose a convenient date and select an available
+                appointment time.
+            </p>
+        </div>
+
+    </section>
+
+
+    <!-- Booking Card -->
+    <section class="appointment-card">
+
+        <!-- STEP 1 -->
+        <div class="booking-step">
+
+            <div class="step-number">
+                1
+            </div>
+
+            <div class="step-content">
+
+                <h2>
+                    <i class="fa-solid fa-user-doctor"></i>
+                    Select Doctor
+                </h2>
+
+                <p class="step-description">
+                    Choose a doctor based on specialization and hospital.
+                </p>
+
+                <div class="doctor-select-wrapper">
+
+                    <i class="fa-solid fa-stethoscope select-icon"></i>
+
+                    <select
+                        id="doctorSelect"
+                        class="appointment-select"
+                    >
+
+                        <option value="">
+                            Select a doctor
+                        </option>
+
+                        {% for doctor in doctors %}
+
+                        <option
+                            value="{{ doctor.id }}"
+                            data-fee="{{ doctor.consultation_fee|default_if_none:'' }}"
+                            data-name="{{ doctor.name }}"
+                            data-specialization="{{ doctor.specialization }}"
+                            data-hospital="{{ doctor.hospital.name }}"
+                        >
+                            {{ doctor.name }}
+                            — {{ doctor.specialization }}
+                            — {{ doctor.hospital.name }}
+                        </option>
+
+                        {% empty %}
+
+                        <option value="">
+                            No doctors available
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                    <i class="fa-solid fa-chevron-down dropdown-icon"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- DOCTOR INFORMATION -->
+        <div
+            id="doctorInfo"
+            class="doctor-info hidden"
+        >
+
+            <div class="doctor-info-icon">
+                <i class="fa-solid fa-user-doctor"></i>
+            </div>
+
+            <div class="doctor-info-content">
+
+                <strong id="doctorName">
+                    Doctor
+                </strong>
+
+                <span id="doctorSpecialization">
+                    Specialization
+                </span>
+
+                <span id="doctorHospital">
+                    Hospital
+                </span>
+
+                <span
+                    id="doctorFee"
+                    class="doctor-fee"
+                >
+                    Consultation Fee: Not specified
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- STEP 2 -->
+        <div class="booking-step">
+
+            <div class="step-number">
+                2
+            </div>
+
+            <div class="step-content">
+
+                <h2>
+                    <i class="fa-solid fa-calendar-days"></i>
+                    Select Date
+                </h2>
+
+                <p class="step-description">
+                    Choose the date you want to visit the doctor.
+                </p>
+
+                <div class="date-input-wrapper">
+
+                    <i class="fa-solid fa-calendar-check input-icon"></i>
+
+                    <input
+                        type="date"
+                        id="appointmentDate"
+                        class="appointment-input"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- STEP 3 -->
+        <div class="booking-step">
+
+            <div class="step-number">
+                3
+            </div>
+
+            <div class="step-content">
+
+                <h2>
+                    <i class="fa-regular fa-clock"></i>
+                    Available Time
+                </h2>
+
+                <p class="step-description">
+                    Select an available appointment time.
+                </p>
+
+                <div
+                    id="slotsContainer"
+                    class="slots-container"
+                >
+
+                    <div class="empty-slots">
+
+                        <i class="fa-regular fa-calendar"></i>
+
+                        <span>
+                            Select a doctor and date to view available times.
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <input
+                    type="hidden"
+                    id="selectedTime"
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- STEP 4 -->
+        <div class="booking-step">
+
+            <div class="step-number">
+                4
+            </div>
+
+            <div class="step-content">
+
+                <h2>
+                    <i class="fa-regular fa-note-sticky"></i>
+                    Patient Notes
+
+                    <span class="optional-label">
+                        Optional
+                    </span>
+                </h2>
+
+                <p class="step-description">
+                    Add any information you want the doctor to know.
+                </p>
+
+                <textarea
+                    id="patientNotes"
+                    class="appointment-textarea"
+                    rows="4"
+                    placeholder="Example: I have been experiencing chest discomfort..."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+
+        <!-- BOOKING SUMMARY -->
+        <div
+            id="bookingSummary"
+            class="booking-summary hidden"
+        >
+
+            <div class="summary-header">
+
+                <div class="summary-icon">
+                    <i class="fa-solid fa-receipt"></i>
+                </div>
+
+                <div>
+                    <h3>Appointment Summary</h3>
+
+                    <p>
+                        Please review your appointment details.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="summary-details">
+
+                <div class="summary-row">
+
+                    <span>
+                        <i class="fa-solid fa-user-doctor"></i>
+                        Doctor
+                    </span>
+
+                    <strong id="summaryDoctor">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        <i class="fa-solid fa-stethoscope"></i>
+                        Specialization
+                    </span>
+
+                    <strong id="summarySpecialization">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        <i class="fa-solid fa-hospital"></i>
+                        Hospital
+                    </span>
+
+                    <strong id="summaryHospital">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        <i class="fa-solid fa-calendar-day"></i>
+                        Date
+                    </span>
+
+                    <strong id="summaryDate">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-row">
+
+                    <span>
+                        <i class="fa-regular fa-clock"></i>
+                        Time
+                    </span>
+
+                    <strong id="summaryTime">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-divider"></div>
+
+
+                <div class="summary-total">
+
+                    <span>
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                        Consultation Fee
+                    </span>
+
+                    <strong id="summaryFee">
+                        ₹0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BOOK BUTTON -->
+        <div class="booking-action">
+
+            <button
+                type="button"
+                id="bookAppointmentBtn"
+                class="book-appointment-btn"
+                disabled
+            >
+
+                <i class="fa-solid fa-calendar-plus"></i>
+
+                <span>
+                    Book Appointment
+                </span>
+
+            </button>
+
+        </div>
+
+
+        <!-- MESSAGE -->
+        <div
+            id="appointmentMessage"
+            class="appointment-message hidden"
+            role="alert"
+        ></div>
+
+    </section>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* ==========================================
+       ELEMENTS
+    ========================================== */
+
+    const doctorSelect =
+        document.getElementById("doctorSelect");
+
+    const appointmentDate =
+        document.getElementById("appointmentDate");
+
+    const slotsContainer =
+        document.getElementById("slotsContainer");
+
+    const selectedTime =
+        document.getElementById("selectedTime");
+
+    const bookButton =
+        document.getElementById("bookAppointmentBtn");
+
+    const patientNotes =
+        document.getElementById("patientNotes");
+
+    const appointmentMessage =
+        document.getElementById("appointmentMessage");
+
+
+    /* Doctor information */
+
+    const doctorInfo =
+        document.getElementById("doctorInfo");
+
+    const doctorName =
+        document.getElementById("doctorName");
+
+    const doctorSpecialization =
+        document.getElementById("doctorSpecialization");
+
+    const doctorHospital =
+        document.getElementById("doctorHospital");
+
+    const doctorFee =
+        document.getElementById("doctorFee");
+
+
+    /* Booking summary */
+
+    const bookingSummary =
+        document.getElementById("bookingSummary");
+
+    const summaryDoctor =
+        document.getElementById("summaryDoctor");
+
+    const summarySpecialization =
+        document.getElementById("summarySpecialization");
+
+    const summaryHospital =
+        document.getElementById("summaryHospital");
+
+    const summaryDate =
+        document.getElementById("summaryDate");
+
+    const summaryTime =
+        document.getElementById("summaryTime");
+
+    const summaryFee =
+        document.getElementById("summaryFee");
+
+
+    /* ==========================================
+       MESSAGE
+    ========================================== */
+
+    function showMessage(message, type) {
+
+        appointmentMessage.textContent =
+            message;
+
+        appointmentMessage.className =
+            "appointment-message " + type;
+
+    }
+
+
+    function hideMessage() {
+
+        appointmentMessage.className =
+            "appointment-message hidden";
+
+        appointmentMessage.textContent =
+            "";
+
+    }
+
+
+    /* ==========================================
+       RESET SLOTS
+    ========================================== */
+
+    function resetSlots(message) {
+
+        selectedTime.value = "";
+
+        bookButton.disabled = true;
+
+        slotsContainer.innerHTML = `
+            <div class="empty-slots">
+                <i class="fa-regular fa-calendar"></i>
+                <span>${message}</span>
+            </div>
+        `;
+
+        updateSummary();
+
+    }
+
+
+    /* ==========================================
+       BOOK BUTTON
+    ========================================== */
+
+    function updateBookingButton() {
+
+        const doctorSelected =
+            doctorSelect.value !== "";
+
+        const dateSelected =
+            appointmentDate.value !== "";
+
+        const timeSelected =
+            selectedTime.value !== "";
+
+        bookButton.disabled =
+            !(
+                doctorSelected &&
+                dateSelected &&
+                timeSelected
+            );
+
+    }
+
+
+    /* ==========================================
+       FORMAT DATE
+    ========================================== */
+
+    function formatDate(dateString) {
+
+        if (!dateString) {
+            return "—";
+        }
+
+        const date =
+            new Date(dateString + "T00:00:00");
+
+        return date.toLocaleDateString(
+            "en-IN",
+            {
+                day: "2-digit",
+                month: "long",
+                year: "numeric"
+            }
+        );
+
+    }
+
+
+    /* ==========================================
+       FORMAT FEE
+    ========================================== */
+
+    function formatFee(fee) {
+
+        if (
+            fee === null ||
+            fee === undefined ||
+            fee === ""
+        ) {
+            return "Not specified";
+        }
+
+        const numericFee =
+            parseFloat(fee);
+
+        if (Number.isNaN(numericFee)) {
+            return "Not specified";
+        }
+
+        return (
+            "₹" +
+            numericFee.toLocaleString(
+                "en-IN",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            )
+        );
+
+    }
+
+
+    /* ==========================================
+       UPDATE BOOKING SUMMARY
+    ========================================== */
+
+    function updateSummary() {
+
+        const selectedOption =
+            doctorSelect.options[
+                doctorSelect.selectedIndex
+            ];
+
+        if (
+            !doctorSelect.value ||
+            selectedOption.value === ""
+        ) {
+
+            bookingSummary.classList.add(
+                "hidden"
+            );
+
+            return;
+
+        }
+
+
+        const name =
+            selectedOption.dataset.name || "";
+
+        const specialization =
+            selectedOption.dataset.specialization || "";
+
+        const hospital =
+            selectedOption.dataset.hospital || "";
+
+        const fee =
+            selectedOption.dataset.fee || "";
+
+
+        summaryDoctor.textContent =
+            name || "—";
+
+        summarySpecialization.textContent =
+            specialization || "—";
+
+        summaryHospital.textContent =
+            hospital || "—";
+
+        summaryDate.textContent =
+            formatDate(
+                appointmentDate.value
+            );
+
+        summaryTime.textContent =
+            selectedTime.value
+                ? formatTimeForDisplay(
+                    selectedTime.value
+                )
+                : "—";
+
+        summaryFee.textContent =
+            formatFee(fee);
+
+
+        bookingSummary.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    /* ==========================================
+       FORMAT TIME
+    ========================================== */
+
+    function formatTimeForDisplay(timeString) {
+
+        if (!timeString) {
+            return "—";
+        }
+
+        const parts =
+            timeString.split(":");
+
+        if (parts.length < 2) {
+            return timeString;
+        }
+
+        let hours =
+            parseInt(parts[0], 10);
+
+        const minutes =
+            parts[1];
+
+        const period =
+            hours >= 12 ? "PM" : "AM";
+
+        hours =
+            hours % 12 || 12;
+
+        return (
+            hours +
+            ":" +
+            minutes +
+            " " +
+            period
+        );
+
+    }
+
+
+    /* ==========================================
+       DOCTOR CHANGE
+    ========================================== */
+
+    doctorSelect.addEventListener(
+        "change",
+        function () {
+
+            hideMessage();
+
+            selectedTime.value =
+                "";
+
+            updateBookingButton();
+
+
+            const selectedOption =
+                doctorSelect.options[
+                    doctorSelect.selectedIndex
+                ];
+
+
+            if (!doctorSelect.value) {
+
+                doctorInfo.classList.add(
+                    "hidden"
+                );
+
+                bookingSummary.classList.add(
+                    "hidden"
+                );
+
+                resetSlots(
+                    "Select a doctor and date to view available times."
+                );
+
+                return;
+
+            }
+
+
+            /* Get doctor data */
+
+            const name =
+                selectedOption.dataset.name ||
+                "Doctor";
+
+            const specialization =
+                selectedOption.dataset.specialization ||
+                "Specialization";
+
+            const hospital =
+                selectedOption.dataset.hospital ||
+                "Hospital";
+
+            const fee =
+                selectedOption.dataset.fee ||
+                "";
+
+
+            /* Display doctor */
+
+            doctorName.textContent =
+                name;
+
+            doctorSpecialization.textContent =
+                specialization;
+
+            doctorHospital.textContent =
+                hospital;
+
+
+            /* Display consultation fee */
+
+            if (fee) {
+
+                doctorFee.textContent =
+                    "Consultation Fee: " +
+                    formatFee(fee);
+
+            } else {
+
+                doctorFee.textContent =
+                    "Consultation Fee: Not specified";
+
+            }
+
+
+            doctorInfo.classList.remove(
+                "hidden"
+            );
+
+
+            updateSummary();
+
+
+            /* Load slots if date selected */
+
+            if (appointmentDate.value) {
+
+                loadAvailableSlots();
+
+            } else {
+
+                resetSlots(
+                    "Now select a date to view available times."
+                );
+
+            }
+
+        }
+    );
+
+
+    /* ==========================================
+       DATE CHANGE
+    ========================================== */
+
+    appointmentDate.addEventListener(
+        "change",
+        function () {
+
+            hideMessage();
+
+            selectedTime.value =
+                "";
+
+            updateBookingButton();
+
+            updateSummary();
+
+
+            if (!doctorSelect.value) {
+
+                resetSlots(
+                    "Please select a doctor first."
+                );
+
+                return;
+
+            }
+
+
+            if (!appointmentDate.value) {
+
+                resetSlots(
+                    "Select a date to view available times."
+                );
+
+                return;
+
+            }
+
+
+            loadAvailableSlots();
+
+        }
+    );
+
+
+    /* ==========================================
+       LOAD AVAILABLE SLOTS
+    ========================================== */
+
+    async function loadAvailableSlots() {
+
+        resetSlots(
+            "Loading available times..."
+        );
+
+
+        slotsContainer.innerHTML = `
+            <div class="loading-slots">
+                <span class="loading-spinner"></span>
+                <span>
+                    Checking available appointments...
+                </span>
+            </div>
+        `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/appointments/available-slots/?doctor_id=${encodeURIComponent(
+                        doctorSelect.value
+                    )}&date=${encodeURIComponent(
+                        appointmentDate.value
+                    )}`
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !data.success
+            ) {
+
+                resetSlots(
+                    data.message ||
+                    "Unable to load available appointments."
+                );
+
+                return;
+
+            }
+
+
+            if (
+                !data.slots ||
+                data.slots.length === 0
+            ) {
+
+                resetSlots(
+                    "No appointment slots are available for this date."
+                );
+
+                return;
+
+            }
+
+
+            renderSlots(
+                data.slots
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Slot loading error:",
+                error
+            );
+
+            resetSlots(
+                "Unable to connect to the appointment service."
+            );
+
+        }
+
+    }
+
+
+    /* ==========================================
+       RENDER TIME SLOTS
+    ========================================== */
+
+    function renderSlots(slots) {
+
+        slotsContainer.innerHTML =
+            "";
+
+
+        slots.forEach(
+            function (slot) {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                button.type =
+                    "button";
+
+                button.className =
+                    "time-slot";
+
+                button.dataset.time =
+                    slot.value;
+
+
+                button.innerHTML = `
+                    <i class="fa-regular fa-clock"></i>
+                    <span>${slot.label}</span>
+                `;
+
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        document
+                            .querySelectorAll(
+                                ".time-slot"
+                            )
+                            .forEach(
+                                function (item) {
+
+                                    item.classList.remove(
+                                        "selected"
+                                    );
+
+                                }
+                            );
+
+
+                        button.classList.add(
+                            "selected"
+                        );
+
+
+                        selectedTime.value =
+                            slot.value;
+
+
+                        hideMessage();
+
+                        updateBookingButton();
+
+                        updateSummary();
+
+                    }
+                );
+
+
+                slotsContainer.appendChild(
+                    button
+                );
+
+            }
+        );
+
+    }
+
+
+    /* ==========================================
+       BOOK APPOINTMENT
+    ========================================== */
+
+    bookButton.addEventListener(
+        "click",
+        async function () {
+
+            if (bookButton.disabled) {
+                return;
+            }
+
+
+            hideMessage();
+
+
+            bookButton.disabled =
+                true;
+
+
+            bookButton.innerHTML = `
+                <span class="loading-spinner"></span>
+                <span>
+                    Booking Appointment...
+                </span>
+            `;
+
+
+            const formData =
+                new FormData();
+
+
+            formData.append(
+                "doctor_id",
+                doctorSelect.value
+            );
+
+
+            formData.append(
+                "date",
+                appointmentDate.value
+            );
+
+
+            formData.append(
+                "time",
+                selectedTime.value
+            );
+
+
+            formData.append(
+                "patient_notes",
+                patientNotes.value.trim()
+            );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "{% url 'book_appointment_api' %}",
+                        {
+                            method: "POST",
+
+                            body: formData,
+
+                            headers: {
+                                "X-CSRFToken":
+                                    getCookie(
+                                        "csrftoken"
+                                    )
+                            }
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    !response.ok ||
+                    !data.success
+                ) {
+
+                    showMessage(
+                        data.message ||
+                        "Unable to book the appointment.",
+                        "error"
+                    );
+
+
+                    bookButton.innerHTML = `
+                        <i class="fa-solid fa-calendar-plus"></i>
+                        <span>
+                            Book Appointment
+                        </span>
+                    `;
+
+
+                    updateBookingButton();
+
+                    return;
+
+                }
+
+
+                /* Success */
+
+                showMessage(
+                    `${data.message} Appointment ID: ${data.appointment.id}`,
+                    "success"
+                );
+
+
+                bookButton.innerHTML = `
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>
+                        Appointment Booked
+                    </span>
+                `;
+
+
+                /*
+                 * Reload slots.
+                 * The booked time will disappear.
+                 */
+
+                await loadAvailableSlots();
+
+
+                patientNotes.value =
+                    "";
+
+
+                selectedTime.value =
+                    "";
+
+
+                updateSummary();
+
+
+                /*
+                 * Allow another appointment
+                 * after successful booking.
+                 */
+
+                setTimeout(
+                    function () {
+
+                        bookButton.innerHTML = `
+                            <i class="fa-solid fa-calendar-plus"></i>
+                            <span>
+                                Book Appointment
+                            </span>
+                        `;
+
+                        updateBookingButton();
+
+                    },
+                    2500
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Booking error:",
+                    error
+                );
+
+
+                showMessage(
+                    "Something went wrong while booking the appointment.",
+                    "error"
+                );
+
+
+                bookButton.innerHTML = `
+                    <i class="fa-solid fa-calendar-plus"></i>
+                    <span>
+                        Book Appointment
+                    </span>
+                `;
+
+
+                updateBookingButton();
+
+            }
+
+        }
+    );
+
+
+    /* ==========================================
+       CSRF COOKIE
+    ========================================== */
+
+    function getCookie(name) {
+
+        let cookieValue =
+            null;
+
+
+        if (
+            document.cookie &&
+            document.cookie !== ""
+        ) {
+
+            const cookies =
+                document.cookie.split(
+                    ";"
+                );
+
+
+            for (
+                let i = 0;
+                i < cookies.length;
+                i++
+            ) {
+
+                const cookie =
+                    cookies[i].trim();
+
+
+                if (
+                    cookie.substring(
+                        0,
+                        name.length + 1
+                    ) ===
+                    (name + "=")
+                ) {
+
+                    cookieValue =
+                        decodeURIComponent(
+                            cookie.substring(
+                                name.length + 1
+                            )
+                        );
+
+                    break;
+
+                }
+
+            }
+
+        }
+
+        return cookieValue;
+
+    }
+
+
+    /* ==========================================
+       PREVENT PAST DATES
+    ========================================== */
+
+    const today =
+        new Date()
+            .toISOString()
+            .split("T")[0];
+
+
+    appointmentDate.min =
+        today;
+
+});
+
+</script>
+
+{% endblock %}

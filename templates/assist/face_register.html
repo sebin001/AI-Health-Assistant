@@ -1,0 +1,260 @@
+{% extends "assist/base.html" %}
+{% load static %}
+
+{% block title %}
+Face ID Registration | AI Health Assistant
+{% endblock %}
+
+{% block extra_css %}
+<link
+    rel="stylesheet"
+    href="{% static 'css/face.css' %}"
+>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="face-page">
+
+    <!-- Animated Background -->
+    <div class="face-bg-circle face-bg-circle-one"></div>
+    <div class="face-bg-circle face-bg-circle-two"></div>
+    <div class="face-bg-circle face-bg-circle-three"></div>
+
+
+    <div class="face-container">
+
+        <!-- Header -->
+        <div class="face-page-header">
+
+            <div class="face-security-label">
+                <span class="security-dot"></span>
+                SECURE BIOMETRIC REGISTRATION
+            </div>
+
+            <h1>
+                Register Your Face ID
+            </h1>
+
+            <p>
+                Set up Face ID for secure and convenient
+                access to your AI Health Assistant account.
+            </p>
+
+        </div>
+
+
+        <!-- Main Card -->
+        <div class="face-card">
+
+            <!-- Camera -->
+            <div class="camera-container">
+
+                <video
+                    id="faceCamera"
+                    autoplay
+                    playsinline
+                    muted
+                ></video>
+
+                <canvas
+                    id="faceCanvas"
+                    style="display: none;"
+                ></canvas>
+
+
+                <!-- Face Frame -->
+                <div class="face-frame">
+
+                    <div class="face-corner face-corner-tl"></div>
+                    <div class="face-corner face-corner-tr"></div>
+                    <div class="face-corner face-corner-bl"></div>
+                    <div class="face-corner face-corner-br"></div>
+
+                    <div class="face-scan-line"></div>
+
+                </div>
+
+
+                <!-- Camera Status -->
+                <div
+                    id="cameraStatus"
+                    class="camera-status"
+                >
+                    <span class="camera-status-dot"></span>
+                    Starting camera...
+                </div>
+
+            </div>
+
+
+            <!-- Status -->
+            <div
+                id="faceStatus"
+                class="face-status-box loading"
+            >
+
+                <div class="face-status-icon">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
+
+                <div class="face-status-text">
+
+                    <strong>
+                        Preparing Face ID
+                    </strong>
+
+                    <span>
+                        Please look directly at the camera.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- Instructions -->
+            <div class="face-instructions">
+
+                <div class="instruction-card">
+
+                    <div class="instruction-icon">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+
+                    <div>
+                        <strong>
+                            One Person Only
+                        </strong>
+
+                        <span>
+                            Make sure only your face is visible.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="instruction-card">
+
+                    <div class="instruction-icon">
+                        <i class="fa-solid fa-sun"></i>
+                    </div>
+
+                    <div>
+                        <strong>
+                            Good Lighting
+                        </strong>
+
+                        <span>
+                            Keep your face clearly visible.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="instruction-card">
+
+                    <div class="instruction-icon">
+                        <i class="fa-solid fa-eye"></i>
+                    </div>
+
+                    <div>
+                        <strong>
+                            Look at Camera
+                        </strong>
+
+                        <span>
+                            Keep your face inside the frame.
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Controls -->
+            <div class="face-controls">
+
+                <button
+                    type="button"
+                    id="stopCameraBtn"
+                    class="face-control-btn secondary"
+                >
+                    <i class="fa-solid fa-stop"></i>
+                    Stop Camera
+                </button>
+
+                <button
+                    type="button"
+                    id="retryCameraBtn"
+                    class="face-control-btn primary"
+                >
+                    <i class="fa-solid fa-rotate-right"></i>
+                    Retry Camera
+                </button>
+
+            </div>
+
+
+            <!-- Security Note -->
+            <div class="face-security-note">
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+                <div>
+                    <strong>
+                        Your privacy matters
+                    </strong>
+
+                    <p>
+                        Your Face ID is converted into a
+                        mathematical biometric representation
+                        and securely associated with your account.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- User Information -->
+        {% if face_user %}
+
+        <div class="face-user-info">
+
+            <i class="fa-solid fa-circle-user"></i>
+
+            <span>
+                Registering Face ID for
+                <strong>{{ face_user.username }}</strong>
+            </span>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- Face Configuration -->
+<div
+    id="faceConfig"
+    data-detect-url="{% url 'face_detect_api' %}"
+    data-save-url="{% url 'face_save_api' %}"
+></div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script src="{% static 'js/face.js' %}"></script>
+
+{% endblock %}

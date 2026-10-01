@@ -1,0 +1,1711 @@
+{% extends "assist/base.html" %}
+
+{% load static %}
+
+{% block title %}
+My Medicines | AI Health Assistant
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   PREMIUM MEDICINE PAGE
+========================================================= */
+
+.medicines-page {
+    min-height: calc(100vh - 80px);
+    position: relative;
+    overflow: hidden;
+    padding: 55px 25px 70px;
+
+    background:
+        radial-gradient(
+            circle at 8% 15%,
+            rgba(20, 184, 166, 0.16),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 92% 18%,
+            rgba(14, 165, 233, 0.15),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(45, 212, 191, 0.12),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #f8fbfd 0%,
+            #edf8f7 50%,
+            #f3f9fc 100%
+        );
+}
+
+
+/* =========================================================
+   ANIMATED AURORA
+========================================================= */
+
+.aurora {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(2px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.55;
+
+    animation:
+        auroraMove
+        14s
+        ease-in-out
+        infinite alternate;
+}
+
+.aurora-one {
+    width: 420px;
+    height: 420px;
+    top: -180px;
+    left: -140px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(20, 184, 166, 0.22),
+            transparent 68%
+        );
+}
+
+.aurora-two {
+    width: 500px;
+    height: 500px;
+    right: -200px;
+    top: 120px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(14, 165, 233, 0.20),
+            transparent 68%
+        );
+
+    animation-delay: -5s;
+}
+
+.aurora-three {
+    width: 420px;
+    height: 420px;
+    bottom: -230px;
+    left: 35%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(45, 212, 191, 0.18),
+            transparent 68%
+        );
+
+    animation-delay: -8s;
+}
+
+@keyframes auroraMove {
+
+    0% {
+        transform:
+            translate3d(0, 0, 0)
+            scale(1);
+    }
+
+    50% {
+        transform:
+            translate3d(45px, -30px, 0)
+            scale(1.08);
+    }
+
+    100% {
+        transform:
+            translate3d(-30px, 40px, 0)
+            scale(0.96);
+    }
+}
+
+
+/* =========================================================
+   MEDICAL GRID
+========================================================= */
+
+.medical-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.28;
+
+    background-image:
+        linear-gradient(
+            rgba(15, 118, 110, 0.045) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(15, 118, 110, 0.045) 1px,
+            transparent 1px
+        );
+
+    background-size: 55px 55px;
+
+    mask-image:
+        linear-gradient(
+            to bottom,
+            transparent,
+            black 20%,
+            black 80%,
+            transparent
+        );
+}
+
+
+/* =========================================================
+   FLOATING CAPSULES
+========================================================= */
+
+.floating-capsule {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 72px;
+    height: 30px;
+
+    border-radius: 30px;
+
+    opacity: 0.20;
+
+    transform: rotate(-28deg);
+
+    background:
+        linear-gradient(
+            90deg,
+            #14b8a6 0 50%,
+            #ffffff 50% 100%
+        );
+
+    box-shadow:
+        0 8px 25px
+        rgba(20, 184, 166, 0.20);
+
+    animation:
+        capsuleFloat
+        11s
+        ease-in-out
+        infinite;
+}
+
+.floating-capsule::after {
+    content: "";
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+
+    width: 1px;
+
+    background:
+        rgba(15, 118, 110, 0.20);
+}
+
+.capsule-one {
+    top: 16%;
+    left: 4%;
+    animation-delay: -2s;
+}
+
+.capsule-two {
+    top: 67%;
+    right: 5%;
+
+    transform: rotate(32deg);
+
+    animation-delay: -7s;
+
+    opacity: 0.16;
+}
+
+.capsule-three {
+    top: 38%;
+    right: 14%;
+
+    transform:
+        rotate(-12deg)
+        scale(0.75);
+
+    animation-delay: -4s;
+
+    opacity: 0.14;
+}
+
+.capsule-four {
+    bottom: 9%;
+    left: 18%;
+
+    transform:
+        rotate(22deg)
+        scale(0.65);
+
+    animation-delay: -9s;
+
+    opacity: 0.13;
+}
+
+@keyframes capsuleFloat {
+
+    0% {
+        margin-top: 0;
+        margin-left: 0;
+
+        transform:
+            rotate(-28deg)
+            translateY(0);
+    }
+
+    25% {
+        margin-left: 20px;
+    }
+
+    50% {
+        margin-top: -35px;
+        margin-left: 5px;
+
+        transform:
+            rotate(-15deg)
+            translateY(-10px);
+    }
+
+    75% {
+        margin-left: -18px;
+    }
+
+    100% {
+        margin-top: 0;
+        margin-left: 0;
+
+        transform:
+            rotate(-28deg)
+            translateY(0);
+    }
+}
+
+
+/* =========================================================
+   FLOATING PILL ICONS
+========================================================= */
+
+.floating-pill {
+    position: absolute;
+    z-index: 1;
+
+    color:
+        rgba(14, 165, 233, 0.13);
+
+    pointer-events: none;
+
+    font-size: 45px;
+
+    animation:
+        pillDrift
+        13s
+        ease-in-out
+        infinite;
+}
+
+.pill-one {
+    left: 16%;
+    top: 12%;
+    animation-delay: -3s;
+}
+
+.pill-two {
+    right: 24%;
+    top: 12%;
+    font-size: 30px;
+    animation-delay: -8s;
+}
+
+.pill-three {
+    left: 7%;
+    bottom: 23%;
+    font-size: 35px;
+    animation-delay: -6s;
+}
+
+.pill-four {
+    right: 9%;
+    bottom: 17%;
+    font-size: 50px;
+    animation-delay: -1s;
+}
+
+@keyframes pillDrift {
+
+    0% {
+        transform:
+            translate3d(0, 0, 0)
+            rotate(0deg);
+
+        opacity: 0.10;
+    }
+
+    30% {
+        opacity: 0.18;
+    }
+
+    50% {
+        transform:
+            translate3d(25px, -35px, 0)
+            rotate(12deg);
+
+        opacity: 0.14;
+    }
+
+    80% {
+        opacity: 0.20;
+    }
+
+    100% {
+        transform:
+            translate3d(-10px, 10px, 0)
+            rotate(-8deg);
+
+        opacity: 0.10;
+    }
+}
+
+
+/* =========================================================
+   MEDICAL PARTICLES
+========================================================= */
+
+.medical-particle {
+    position: absolute;
+    z-index: 1;
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(20, 184, 166, 0.35);
+
+    box-shadow:
+        0 0 14px
+        rgba(20, 184, 166, 0.25);
+
+    pointer-events: none;
+
+    animation:
+        particleMove
+        8s
+        ease-in-out
+        infinite;
+}
+
+.particle-one {
+    top: 25%;
+    left: 23%;
+    animation-delay: -1s;
+}
+
+.particle-two {
+    top: 62%;
+    left: 30%;
+    animation-delay: -4s;
+}
+
+.particle-three {
+    top: 20%;
+    right: 32%;
+    animation-delay: -6s;
+}
+
+.particle-four {
+    bottom: 18%;
+    right: 28%;
+    animation-delay: -2s;
+}
+
+.particle-five {
+    top: 47%;
+    left: 8%;
+    animation-delay: -7s;
+}
+
+@keyframes particleMove {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            scale(1);
+
+        opacity: 0.25;
+    }
+
+    50% {
+        transform:
+            translateY(-28px)
+            scale(1.5);
+
+        opacity: 0.75;
+    }
+}
+
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.medicines-container {
+    position: relative;
+    z-index: 5;
+
+    max-width: 1250px;
+
+    margin: auto;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.medicines-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    margin-bottom: 35px;
+
+    animation:
+        headerReveal
+        0.8s
+        ease both;
+}
+
+@keyframes headerReveal {
+
+    from {
+        opacity: 0;
+        transform:
+            translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0);
+    }
+}
+
+.medicines-title {
+    display: flex;
+
+    align-items: center;
+
+    gap: 17px;
+}
+
+.medicine-title-icon {
+    position: relative;
+
+    width: 65px;
+    height: 65px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 19px;
+
+    color: white;
+
+    font-size: 26px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #14b8a6
+        );
+
+    box-shadow:
+        0 15px 35px
+        rgba(20, 184, 166, 0.30);
+
+    animation:
+        titleIcon
+        3s
+        ease-in-out
+        infinite;
+}
+
+.medicine-title-icon::before {
+    content: "";
+
+    position: absolute;
+
+    inset: -7px;
+
+    border:
+        1px solid
+        rgba(20, 184, 166, 0.25);
+
+    border-radius: 24px;
+
+    animation:
+        iconRing
+        3s
+        ease-out
+        infinite;
+}
+
+@keyframes titleIcon {
+
+    0%,
+    100% {
+        transform:
+            translateY(0);
+    }
+
+    50% {
+        transform:
+            translateY(-4px);
+    }
+}
+
+@keyframes iconRing {
+
+    0% {
+        transform: scale(0.90);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.20);
+        opacity: 0;
+    }
+}
+
+.medicines-title h1 {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size: 31px;
+
+    font-weight: 850;
+
+    letter-spacing: -0.5px;
+}
+
+.medicines-title p {
+    margin: 6px 0 0;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   ADD BUTTON
+========================================================= */
+
+.add-medicine-btn {
+    position: relative;
+    overflow: hidden;
+
+    display: inline-flex;
+
+    align-items: center;
+    gap: 9px;
+
+    padding: 14px 21px;
+
+    color: white;
+
+    text-decoration: none;
+
+    border-radius: 13px;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #14b8a6
+        );
+
+    box-shadow:
+        0 12px 28px
+        rgba(20, 184, 166, 0.28);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.add-medicine-btn::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -120%;
+
+    width: 80%;
+    height: 100%;
+
+    transform: skewX(-25deg);
+
+    background:
+        rgba(255, 255, 255, 0.20);
+
+    transition:
+        left 0.6s ease;
+}
+
+.add-medicine-btn:hover::before {
+    left: 140%;
+}
+
+.add-medicine-btn:hover {
+    color: white;
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 18px 35px
+        rgba(20, 184, 166, 0.38);
+}
+
+
+/* =========================================================
+   MEDICINE GRID
+========================================================= */
+
+.medicine-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(340px, 1fr)
+        );
+
+    gap: 24px;
+}
+
+
+/* =========================================================
+   MEDICINE CARD
+========================================================= */
+
+.medicine-card {
+    position: relative;
+    overflow: hidden;
+
+    padding: 25px;
+
+    background:
+        rgba(255, 255, 255, 0.88);
+
+    border:
+        1px solid
+        rgba(148, 163, 184, 0.22);
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 15px 45px
+        rgba(15, 23, 42, 0.075);
+
+    backdrop-filter:
+        blur(16px);
+
+    animation:
+        cardReveal
+        0.65s
+        ease both;
+
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.medicine-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #0f766e,
+            #14b8a6,
+            #38bdf8
+        );
+
+    transform:
+        scaleX(0.35);
+
+    transform-origin:
+        left;
+
+    transition:
+        transform 0.4s ease;
+}
+
+.medicine-card:hover::before {
+    transform:
+        scaleX(1);
+}
+
+.medicine-card:hover {
+    transform:
+        translateY(-8px);
+
+    border-color:
+        rgba(20, 184, 166, 0.30);
+
+    box-shadow:
+        0 25px 55px
+        rgba(15, 23, 42, 0.12);
+}
+
+@keyframes cardReveal {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(25px)
+            scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   CARD HEADER
+========================================================= */
+
+.medicine-card-top {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 21px;
+}
+
+.medicine-name-box {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+}
+
+.medicine-icon {
+    width: 49px;
+    height: 49px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    color: #0f766e;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(20, 184, 166, 0.14),
+            rgba(14, 165, 233, 0.08)
+        );
+
+    font-size: 20px;
+
+    transition:
+        transform 0.3s ease;
+}
+
+.medicine-card:hover .medicine-icon {
+    transform:
+        rotate(-8deg)
+        scale(1.08);
+}
+
+.medicine-name {
+    margin: 0;
+
+    color: #0f172a;
+
+    font-size: 19px;
+
+    font-weight: 800;
+}
+
+.medicine-dosage {
+    margin: 4px 0 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 7px 11px;
+
+    border-radius: 30px;
+
+    font-size: 10px;
+
+    font-weight: 850;
+
+    white-space: nowrap;
+}
+
+.status-active {
+    color: #047857;
+
+    background:
+        rgba(16, 185, 129, 0.11);
+}
+
+.status-inactive {
+    color: #b45309;
+
+    background:
+        rgba(245, 158, 11, 0.11);
+}
+
+.status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: currentColor;
+
+    animation:
+        statusPulse
+        2s
+        ease-in-out
+        infinite;
+}
+
+@keyframes statusPulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 0 0
+            currentColor;
+    }
+
+    50% {
+        box-shadow:
+            0 0 0 4px
+            transparent;
+    }
+}
+
+
+/* =========================================================
+   INFORMATION
+========================================================= */
+
+.medicine-info {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 11px;
+
+    margin-bottom: 20px;
+}
+
+.info-item {
+    padding: 13px;
+
+    border:
+        1px solid
+        rgba(226, 232, 240, 0.8);
+
+    border-radius: 13px;
+
+    background:
+        rgba(248, 250, 252, 0.80);
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+.medicine-card:hover .info-item {
+    background:
+        rgba(240, 253, 250, 0.85);
+}
+
+.info-label {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.6px;
+}
+
+.info-value {
+    color: #334155;
+
+    font-size: 12px;
+
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   EMAIL STATUS
+========================================================= */
+
+.email-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 20px;
+
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+.email-status i {
+    color: #0ea5e9;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.medicine-actions {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr
+        1fr;
+
+    gap: 8px;
+
+    padding-top: 18px;
+
+    border-top:
+        1px solid
+        rgba(226, 232, 240, 0.9);
+}
+
+.action-btn {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    min-height: 39px;
+
+    padding: 9px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.action-btn:hover {
+    transform:
+        translateY(-2px);
+}
+
+
+/* EDIT */
+
+.action-edit {
+    color: #0369a1;
+
+    background:
+        rgba(14, 165, 233, 0.09);
+}
+
+.action-edit:hover {
+    color: white;
+
+    background: #0284c7;
+}
+
+
+/* TOGGLE */
+
+.action-toggle {
+    color: #047857;
+
+    background:
+        rgba(16, 185, 129, 0.09);
+}
+
+.action-toggle:hover {
+    color: white;
+
+    background: #059669;
+}
+
+
+/* DELETE */
+
+.action-delete {
+    color: #dc2626;
+
+    background:
+        rgba(239, 68, 68, 0.07);
+}
+
+.action-delete:hover {
+    color: white;
+
+    background: #dc2626;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-medicines {
+    position: relative;
+    overflow: hidden;
+
+    padding: 80px 25px;
+
+    text-align: center;
+
+    background:
+        rgba(255, 255, 255, 0.88);
+
+    border:
+        1px solid
+        rgba(148, 163, 184, 0.20);
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 20px 50px
+        rgba(15, 23, 42, 0.08);
+
+    backdrop-filter:
+        blur(15px);
+}
+
+.empty-icon {
+    width: 86px;
+    height: 86px;
+
+    margin:
+        0 auto 22px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    color: #0f766e;
+
+    background:
+        rgba(20, 184, 166, 0.10);
+
+    font-size: 34px;
+
+    animation:
+        emptyFloat
+        3s
+        ease-in-out
+        infinite;
+}
+
+@keyframes emptyFloat {
+
+    0%,
+    100% {
+        transform:
+            translateY(0);
+    }
+
+    50% {
+        transform:
+            translateY(-8px);
+    }
+}
+
+.empty-medicines h2 {
+    margin:
+        0 0 9px;
+
+    color: #0f172a;
+
+    font-size: 23px;
+}
+
+.empty-medicines p {
+    max-width: 470px;
+
+    margin:
+        0 auto 26px;
+
+    color: #64748b;
+
+    line-height: 1.7;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .medicines-page {
+        padding:
+            35px 15px 50px;
+    }
+
+    .medicines-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .medicines-title h1 {
+        font-size: 25px;
+    }
+
+    .medicine-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .medicine-info {
+        grid-template-columns: 1fr;
+    }
+
+    .medicine-actions {
+        grid-template-columns:
+            repeat(3, 1fr);
+    }
+
+    .floating-capsule,
+    .floating-pill {
+        opacity: 0.07;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+
+        animation-duration:
+            0.01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        scroll-behavior:
+            auto !important;
+    }
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="medicines-page">
+
+    <!-- BACKGROUND -->
+
+    <div class="medical-grid"></div>
+
+    <div class="aurora aurora-one"></div>
+
+    <div class="aurora aurora-two"></div>
+
+    <div class="aurora aurora-three"></div>
+
+
+    <!-- FLOATING CAPSULES -->
+
+    <div class="floating-capsule capsule-one"></div>
+
+    <div class="floating-capsule capsule-two"></div>
+
+    <div class="floating-capsule capsule-three"></div>
+
+    <div class="floating-capsule capsule-four"></div>
+
+
+    <!-- FLOATING MEDICAL ICONS -->
+
+    <i class="fa-solid fa-pills floating-pill pill-one"></i>
+
+    <i class="fa-solid fa-capsules floating-pill pill-two"></i>
+
+    <i class="fa-solid fa-pills floating-pill pill-three"></i>
+
+    <i class="fa-solid fa-capsules floating-pill pill-four"></i>
+
+
+    <!-- MEDICAL PARTICLES -->
+
+    <span class="medical-particle particle-one"></span>
+
+    <span class="medical-particle particle-two"></span>
+
+    <span class="medical-particle particle-three"></span>
+
+    <span class="medical-particle particle-four"></span>
+
+    <span class="medical-particle particle-five"></span>
+
+
+    <!-- MAIN CONTENT -->
+
+    <div class="medicines-container">
+
+
+        <!-- HEADER -->
+
+        <div class="medicines-header">
+
+            <div class="medicines-title">
+
+                <div class="medicine-title-icon">
+
+                    <i class="fa-solid fa-pills"></i>
+
+                </div>
+
+                <div>
+
+                    <h1>
+                        My Medicines
+                    </h1>
+
+                    <p>
+                        Manage your medicines,
+                        schedules and reminders
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <a
+                href="{% url 'medicine_add' %}"
+                class="add-medicine-btn"
+            >
+
+                <i class="fa-solid fa-plus"></i>
+
+                Add Medicine
+
+            </a>
+
+        </div>
+
+
+        <!-- MEDICINES -->
+
+        {% if medicines %}
+
+            <div class="medicine-grid">
+
+                {% for medicine in medicines %}
+
+                    <div class="medicine-card">
+
+
+                        <!-- CARD HEADER -->
+
+                        <div class="medicine-card-top">
+
+                            <div class="medicine-name-box">
+
+                                <div class="medicine-icon">
+
+                                    <i class="fa-solid fa-capsules"></i>
+
+                                </div>
+
+
+                                <div>
+
+                                    <h2 class="medicine-name">
+
+                                        {{ medicine.medicine_name }}
+
+                                    </h2>
+
+                                    <p class="medicine-dosage">
+
+                                        {{ medicine.dosage }}
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- STATUS -->
+
+                            {% if medicine.is_active %}
+
+                                <span class="status-badge status-active">
+
+                                    <span class="status-dot"></span>
+
+                                    Active
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-badge status-inactive">
+
+                                    <span class="status-dot"></span>
+
+                                    Paused
+
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- INFORMATION -->
+
+                        <div class="medicine-info">
+
+                            <div class="info-item">
+
+                                <span class="info-label">
+                                    Frequency
+                                </span>
+
+                                <span class="info-value">
+                                    {{ medicine.frequency }}
+                                </span>
+
+                            </div>
+
+
+                            <div class="info-item">
+
+                                <span class="info-label">
+                                    Reminder
+                                </span>
+
+                                <span class="info-value">
+
+                                    {{ medicine.reminder_time|time:"h:i A" }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="info-item">
+
+                                <span class="info-label">
+                                    Start Date
+                                </span>
+
+                                <span class="info-value">
+
+                                    {{ medicine.start_date|date:"d M Y" }}
+
+                                </span>
+
+                            </div>
+
+
+                            <div class="info-item">
+
+                                <span class="info-label">
+                                    End Date
+                                </span>
+
+                                <span class="info-value">
+
+                                    {% if medicine.end_date %}
+
+                                        {{ medicine.end_date|date:"d M Y" }}
+
+                                    {% else %}
+
+                                        No end date
+
+                                    {% endif %}
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- EMAIL -->
+
+                        <div class="email-status">
+
+                            {% if medicine.email_reminder %}
+
+                                <i class="fa-solid fa-envelope-circle-check"></i>
+
+                                Email reminder enabled
+
+                            {% else %}
+
+                                <i class="fa-solid fa-envelope"></i>
+
+                                Email reminder disabled
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- ACTION BUTTONS -->
+
+                        <div class="medicine-actions">
+
+
+                            <!-- EDIT -->
+
+                            <a
+                                href="{% url 'medicine_edit' medicine.id %}"
+                                class="action-btn action-edit"
+                            >
+
+                                <i class="fa-solid fa-pen"></i>
+
+                                Edit
+
+                            </a>
+
+
+                            <!-- PAUSE / ACTIVATE -->
+
+                            <form
+                                method="POST"
+                                action="{% url 'medicine_toggle_status' medicine.id %}"
+                                style="margin: 0;"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="action-btn action-toggle"
+                                    style="width: 100%;"
+                                >
+
+                                    {% if medicine.is_active %}
+
+                                        <i class="fa-solid fa-pause"></i>
+
+                                        Pause
+
+                                    {% else %}
+
+                                        <i class="fa-solid fa-play"></i>
+
+                                        Activate
+
+                                    {% endif %}
+
+                                </button>
+
+                            </form>
+
+
+                            <!-- DELETE -->
+
+                            <a
+                                href="{% url 'medicine_delete' medicine.id %}"
+                                class="action-btn action-delete"
+                            >
+
+                                <i class="fa-solid fa-trash"></i>
+
+                                Delete
+
+                            </a>
+
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+
+        {% else %}
+
+
+            <!-- EMPTY STATE -->
+
+            <div class="empty-medicines">
+
+                <div class="empty-icon">
+
+                    <i class="fa-solid fa-pills"></i>
+
+                </div>
+
+
+                <h2>
+                    No Medicines Added Yet
+                </h2>
+
+
+                <p>
+
+                    Keep your medication schedule organized.
+                    Add your first medicine and let AI Health
+                    Assistant help you stay on track.
+
+                </p>
+
+
+                <a
+                    href="{% url 'medicine_add' %}"
+                    class="add-medicine-btn"
+                >
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Add Your First Medicine
+
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,2487 @@
+{% extends "assist/base.html" %}
+
+{% load static %}
+
+{% block title %}
+My Health Profile | AI Health Assistant
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+<style>
+
+/* =========================================================
+   HEALTH PROFILE PAGE
+========================================================= */
+
+.health-profile-page {
+    min-height: calc(100vh - 80px);
+    position: relative;
+    overflow: hidden;
+    padding: 50px 30px;
+
+    background:
+        radial-gradient(
+            circle at 10% 10%,
+            rgba(20, 184, 166, 0.12),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 90% 80%,
+            rgba(14, 165, 233, 0.10),
+            transparent 30%
+        ),
+        #f4f8fb;
+}
+
+
+/* =========================================================
+   ANIMATED BACKGROUND
+========================================================= */
+
+.profile-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(1px);
+    pointer-events: none;
+    opacity: 0.55;
+}
+
+.profile-orb-one {
+    width: 220px;
+    height: 220px;
+    top: -80px;
+    left: -60px;
+    background: rgba(20, 184, 166, 0.12);
+    animation: profileFloatOne 8s ease-in-out infinite;
+}
+
+.profile-orb-two {
+    width: 280px;
+    height: 280px;
+    right: -100px;
+    bottom: -100px;
+    background: rgba(14, 165, 233, 0.10);
+    animation: profileFloatTwo 10s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.health-profile-container {
+    position: relative;
+    z-index: 2;
+    max-width: 1150px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.profile-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    margin-bottom: 30px;
+    animation: profileHeaderEnter 0.7s ease both;
+}
+
+.profile-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.profile-header-icon {
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+
+    border-radius: 17px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #14b8a6
+        );
+
+    color: #ffffff;
+    font-size: 24px;
+
+    box-shadow:
+        0 12px 28px
+        rgba(15, 118, 110, 0.24);
+
+    animation:
+        profileIconPulse
+        3s
+        ease-in-out
+        infinite;
+}
+
+.profile-header-text h1 {
+    margin: 0;
+    color: #102a43;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.6px;
+}
+
+.profile-header-text p {
+    margin: 6px 0 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   MAIN CARD
+========================================================= */
+
+.profile-main-card {
+    display: grid;
+    grid-template-columns: 330px minmax(0, 1fr);
+
+    background: rgba(255, 255, 255, 0.94);
+
+    border:
+        1px solid
+        rgba(226, 232, 240, 0.9);
+
+    border-radius: 26px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 25px 70px
+        rgba(15, 23, 42, 0.09);
+
+    animation:
+        profileCardEnter
+        0.8s
+        ease
+        0.15s
+        both;
+}
+
+
+/* =========================================================
+   PROFILE SIDEBAR
+========================================================= */
+
+.profile-sidebar {
+    position: relative;
+
+    padding: 38px 28px;
+
+    background:
+        linear-gradient(
+            160deg,
+            #082f49 0%,
+            #0f766e 55%,
+            #115e59 100%
+        );
+
+    color: #ffffff;
+    overflow: hidden;
+}
+
+.profile-sidebar::before {
+    content: "";
+
+    position: absolute;
+
+    width: 240px;
+    height: 240px;
+
+    border-radius: 50%;
+
+    top: -100px;
+    right: -100px;
+
+    background:
+        rgba(255,255,255,0.06);
+
+    animation:
+        sidebarOrb
+        8s
+        ease-in-out
+        infinite;
+}
+
+.profile-sidebar::after {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    border-radius: 50%;
+
+    bottom: -80px;
+    left: -80px;
+
+    background:
+        rgba(255,255,255,0.05);
+}
+
+
+/* =========================================================
+   PROFILE AVATAR
+========================================================= */
+
+.profile-avatar-wrapper {
+    position: relative;
+
+    width: 145px;
+    height: 145px;
+
+    margin:
+        0 auto 22px;
+}
+
+.profile-avatar {
+    width: 145px;
+    height: 145px;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #14b8a6,
+            #0ea5e9
+        );
+
+    border:
+        5px solid
+        rgba(255,255,255,0.9);
+
+    box-shadow:
+        0 15px 40px
+        rgba(0,0,0,0.20);
+
+    animation:
+        avatarFloat
+        5s
+        ease-in-out
+        infinite;
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-avatar i {
+    font-size: 54px;
+    color: rgba(255,255,255,0.9);
+}
+
+.profile-avatar-ring {
+    position: absolute;
+
+    inset: -9px;
+
+    border:
+        1px solid
+        rgba(255,255,255,0.25);
+
+    border-radius: 50%;
+
+    animation:
+        avatarRing
+        4s
+        linear
+        infinite;
+}
+
+
+/* =========================================================
+   PROFILE NAME
+========================================================= */
+
+.profile-user-info {
+    text-align: center;
+
+    position: relative;
+    z-index: 2;
+}
+
+.profile-user-info h2 {
+    margin: 0;
+
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.profile-user-info p {
+    margin:
+        6px 0 20px;
+
+    color:
+        rgba(255,255,255,0.72);
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   VERIFIED BADGE
+========================================================= */
+
+.profile-verified {
+    display: inline-flex;
+
+    align-items: center;
+    gap: 7px;
+
+    padding:
+        8px 13px;
+
+    border-radius: 50px;
+
+    background:
+        rgba(255,255,255,0.10);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.16);
+
+    color: #d1fae5;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.profile-verified i {
+    color: #5eead4;
+}
+
+
+/* =========================================================
+   SIDEBAR INFO
+========================================================= */
+
+.profile-side-info {
+    margin-top: 35px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+
+    position: relative;
+    z-index: 2;
+}
+
+.profile-side-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,0.06);
+
+    transition:
+        transform 0.3s ease,
+        background 0.3s ease;
+}
+
+.profile-side-item:hover {
+    transform:
+        translateX(5px);
+
+    background:
+        rgba(255,255,255,0.11);
+}
+
+.profile-side-item i {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background:
+        rgba(255,255,255,0.10);
+
+    color: #99f6e4;
+}
+
+.profile-side-item span {
+    font-size: 12px;
+    color:
+        rgba(255,255,255,0.72);
+}
+
+
+/* =========================================================
+   FORM SECTION
+========================================================= */
+
+.profile-form-section {
+    min-width: 0;
+    padding: 38px;
+}
+
+
+/* =========================================================
+   FORM HEADER
+========================================================= */
+
+.profile-form-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 28px;
+}
+
+.profile-form-header h2 {
+    margin: 0;
+
+    color: #102a43;
+
+    font-size: 21px;
+    font-weight: 800;
+}
+
+.profile-form-header p {
+    margin:
+        5px 0 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+.profile-message {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        13px 15px;
+
+    margin-bottom: 24px;
+
+    border-radius: 12px;
+
+    background: #ecfdf5;
+
+    border:
+        1px solid
+        #a7f3d0;
+
+    color: #047857;
+
+    font-size: 13px;
+
+    animation:
+        messageEnter
+        0.5s
+        ease
+        both;
+}
+
+.profile-message i {
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   FORM GRID
+========================================================= */
+
+.profile-form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 22px;
+}
+
+.profile-form-group {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+.profile-form-group.full-width {
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.profile-form-group label {
+    margin-bottom: 8px;
+
+    color: #334155;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.profile-input-wrapper {
+    position: relative;
+}
+
+
+/* =========================================================
+   INPUT ICON
+========================================================= */
+
+.profile-input-icon {
+    position: absolute;
+
+    left: 15px;
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    color: #0f766e;
+
+    font-size: 15px;
+
+    pointer-events: none;
+
+    z-index: 2;
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.profile-form-group input,
+.profile-form-group select {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    min-height: 48px;
+
+    padding:
+        12px
+        14px
+        12px
+        43px;
+
+    border:
+        1px solid
+        #dbe4ea;
+
+    border-radius: 12px;
+
+    background: #f8fafc;
+
+    color: #1e293b;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        background 0.3s ease,
+        transform 0.3s ease;
+}
+
+.profile-form-group input:focus,
+.profile-form-group select:focus {
+    background: #ffffff;
+
+    border-color: #14b8a6;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(20,184,166,0.10);
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* =========================================================
+   HELP TEXT
+========================================================= */
+
+.profile-help {
+    margin-top: 6px;
+
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   SECTION TITLE
+========================================================= */
+
+.profile-section-title {
+    grid-column: 1 / -1;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 5px;
+    margin-bottom: -5px;
+
+    padding-bottom: 12px;
+
+    border-bottom:
+        1px solid
+        #edf2f5;
+
+    color: #102a43;
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.profile-section-title i {
+    color: #0f766e;
+}
+
+
+/* =========================================================
+   BMI CARD
+========================================================= */
+
+.bmi-card {
+    grid-column: 1 / -1;
+
+    width: 100%;
+    max-width: 100%;
+
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    margin-top: 2px;
+
+    padding:
+        24px 26px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f0fdfa,
+            #f8fafc,
+            #eefcfb
+        );
+
+    border:
+        1px solid
+        #d8eeeb;
+
+    display: grid;
+
+    grid-template-columns:
+        auto
+        minmax(130px, 170px)
+        minmax(0, 1fr);
+
+    align-items: center;
+
+    gap: 20px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 25px
+        rgba(15,118,110,0.05);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+
+/* =========================================================
+   BMI CARD ANIMATION
+========================================================= */
+
+.bmi-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 240px;
+    height: 240px;
+
+    top: -110px;
+    left: -100px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(20,184,166,0.08);
+
+    pointer-events: none;
+
+    animation:
+        bmiGlow
+        6s
+        ease-in-out
+        infinite;
+}
+
+.bmi-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    right: -100px;
+    bottom: -100px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(14,165,233,0.06);
+
+    pointer-events: none;
+
+    animation:
+        bmiGlowTwo
+        7s
+        ease-in-out
+        infinite;
+}
+
+.bmi-card:hover {
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 15px 35px
+        rgba(15, 118, 110, 0.12);
+
+    border-color:
+        #b8ded9;
+}
+
+
+/* =========================================================
+   BMI ICON
+========================================================= */
+
+.bmi-icon {
+    width: 64px;
+    height: 64px;
+
+    flex-shrink: 0;
+
+    border-radius: 17px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #14b8a6
+        );
+
+    color: #ffffff;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+
+    box-shadow:
+        0 10px 25px
+        rgba(15,118,110,0.18);
+
+    position: relative;
+    z-index: 2;
+
+    animation:
+        bmiIconPulse
+        3s
+        ease-in-out
+        infinite;
+}
+
+
+/* =========================================================
+   BMI CONTENT
+========================================================= */
+
+.bmi-content {
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+.bmi-label {
+    font-size: 11px;
+
+    color: #64748b;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+}
+
+#bmiValue {
+    font-size: 32px;
+
+    line-height: 1.1;
+
+    color: #102a43;
+
+    font-weight: 800;
+}
+
+#bmiStatus {
+    font-size: 13px;
+
+    color: #64748b;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   BMI INDICATOR
+========================================================= */
+
+.bmi-indicator {
+    width: 100%;
+
+    min-width: 0;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+.bmi-bar {
+    position: relative;
+
+    width: 100%;
+
+    height: 11px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #60a5fa 0%,
+            #34d399 35%,
+            #fbbf24 65%,
+            #f87171 100%
+        );
+}
+
+#bmiProgress {
+    position: absolute;
+
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: 16px;
+    height: 16px;
+
+    border-radius: 50%;
+
+    background: #102a43;
+
+    border:
+        3px solid
+        #ffffff;
+
+    box-shadow:
+        0 2px 8px
+        rgba(0,0,0,0.22);
+
+    left: 0%;
+
+    transition:
+        left 0.5s ease;
+}
+
+
+/* =========================================================
+   BMI SCALE
+========================================================= */
+
+.bmi-scale {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    font-size: 9px;
+
+    color: #94a3b8;
+}
+
+.bmi-scale span {
+    white-space: nowrap;
+}
+
+.bmi-scale span:nth-child(1) {
+    text-align: left;
+}
+
+.bmi-scale span:nth-child(2) {
+    text-align: center;
+}
+
+.bmi-scale span:nth-child(3) {
+    text-align: center;
+}
+
+.bmi-scale span:nth-child(4) {
+    text-align: right;
+}
+
+
+/* =========================================================
+   PROFILE PICTURE UPLOAD
+========================================================= */
+
+.profile-upload-area {
+    display: flex;
+
+    align-items: center;
+
+    gap: 22px;
+
+    padding: 20px;
+
+    border:
+        1px dashed
+        #b8d9d5;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8fffe,
+            #f1f9fb
+        );
+
+    transition:
+        border-color 0.3s ease,
+        background 0.3s ease,
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.profile-upload-area:hover {
+    border-color: #14b8a6;
+
+    background: #f7fffe;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 10px 25px
+        rgba(15,118,110,0.08);
+}
+
+
+/* =========================================================
+   UPLOAD PREVIEW
+========================================================= */
+
+.profile-upload-preview {
+    width: 86px;
+    height: 86px;
+
+    flex-shrink: 0;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #14b8a6
+        );
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    box-shadow:
+        0 8px 20px
+        rgba(15,118,110,0.18);
+}
+
+.profile-upload-preview img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.profile-upload-placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color:
+        rgba(255,255,255,0.9);
+
+    font-size: 30px;
+}
+
+
+/* =========================================================
+   UPLOAD CONTENT
+========================================================= */
+
+.profile-upload-content {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 5px;
+
+    min-width: 0;
+}
+
+.profile-upload-content strong {
+    color: #102a43;
+
+    font-size: 14px;
+
+    font-weight: 800;
+}
+
+.profile-upload-content span {
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   HIDE DEFAULT FILE INPUT
+========================================================= */
+
+.profile-upload-content input[type="file"] {
+    display: none;
+}
+
+
+/* =========================================================
+   CHOOSE PICTURE BUTTON
+========================================================= */
+
+.profile-upload-btn {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 8px;
+
+    padding:
+        10px 15px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #14b8a6
+        );
+
+    color: #ffffff !important;
+
+    font-size: 12px !important;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.profile-upload-btn:hover {
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 8px 18px
+        rgba(15,118,110,0.22);
+}
+
+.profile-upload-content small {
+    margin-top: 3px;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   SAVE BUTTON
+========================================================= */
+
+.profile-save-btn {
+    grid-column: 1 / -1;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    width: 100%;
+
+    min-height: 50px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #14b8a6
+        );
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 25px
+        rgba(15,118,110,0.22);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.profile-save-btn:hover {
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 16px 32px
+        rgba(15,118,110,0.28);
+}
+
+.profile-save-btn:active {
+    transform:
+        translateY(-1px);
+}
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes profileHeaderEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(-18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes profileCardEnter {
+
+    from {
+        opacity: 0;
+        transform:
+            translateY(25px)
+            scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+@keyframes profileIconPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+
+@keyframes avatarFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+
+@keyframes avatarRing {
+
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+@keyframes sidebarOrb {
+
+    0%,
+    100% {
+        transform:
+            translate(0,0);
+    }
+
+    50% {
+        transform:
+            translate(-20px,20px);
+    }
+}
+
+
+@keyframes profileFloatOne {
+
+    0%,
+    100% {
+        transform:
+            translate(0,0);
+    }
+
+    50% {
+        transform:
+            translate(30px,40px);
+    }
+}
+
+
+@keyframes profileFloatTwo {
+
+    0%,
+    100% {
+        transform:
+            translate(0,0);
+    }
+
+    50% {
+        transform:
+            translate(-30px,-30px);
+    }
+}
+
+
+@keyframes messageEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes bmiGlow {
+
+    0%,
+    100% {
+        transform:
+            translate(0,0)
+            scale(1);
+    }
+
+    50% {
+        transform:
+            translate(80px,45px)
+            scale(1.2);
+    }
+}
+
+
+@keyframes bmiGlowTwo {
+
+    0%,
+    100% {
+        transform:
+            translate(0,0)
+            scale(1);
+    }
+
+    50% {
+        transform:
+            translate(-40px,-30px)
+            scale(1.15);
+    }
+}
+
+
+@keyframes bmiIconPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1050px) {
+
+    .profile-main-card {
+        grid-template-columns:
+            280px minmax(0, 1fr);
+    }
+
+    .profile-form-section {
+        padding: 30px;
+    }
+
+    .bmi-card {
+        grid-template-columns:
+            auto
+            140px
+            minmax(0, 1fr);
+
+        gap: 15px;
+
+        padding:
+            20px;
+    }
+}
+
+
+@media (max-width: 900px) {
+
+    .profile-main-card {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-sidebar {
+        padding:
+            32px 25px;
+    }
+
+    .profile-side-info {
+        max-width: 500px;
+
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .bmi-card {
+        grid-template-columns:
+            auto
+            minmax(0, 1fr);
+    }
+
+    .bmi-indicator {
+        grid-column: 1 / -1;
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .health-profile-page {
+        padding:
+            30px 15px;
+    }
+
+    .profile-page-header {
+        align-items:
+            flex-start;
+    }
+
+    .profile-header-text h1 {
+        font-size: 24px;
+    }
+
+    .profile-form-section {
+        padding:
+            25px 20px;
+    }
+
+    .profile-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-form-group.full-width {
+        grid-column: auto;
+    }
+
+    .profile-section-title,
+    .profile-save-btn {
+        grid-column: auto;
+    }
+
+    .bmi-card {
+        grid-column: 1 / -1;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 14px;
+
+        padding:
+            20px;
+    }
+
+    .bmi-content {
+        width: 100%;
+    }
+
+    .bmi-indicator {
+        width: 100%;
+    }
+
+    .bmi-scale {
+        font-size: 8px;
+    }
+
+    .profile-upload-area {
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+    }
+}
+
+</style>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="health-profile-page">
+
+    <div class="profile-orb profile-orb-one"></div>
+
+    <div class="profile-orb profile-orb-two"></div>
+
+
+    <div class="health-profile-container">
+
+
+        <!-- =================================================
+             PAGE HEADER
+        ================================================== -->
+
+        <div class="profile-page-header">
+
+            <div class="profile-header-left">
+
+                <div class="profile-header-icon">
+
+                    <i class="fa-solid fa-heart-pulse"></i>
+
+                </div>
+
+
+                <div class="profile-header-text">
+
+                    <h1>
+                        My Health Profile
+                    </h1>
+
+                    <p>
+                        Keep your personal health information
+                        accurate and up to date.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             MAIN PROFILE CARD
+        ================================================== -->
+
+        <div class="profile-main-card">
+
+
+            <!-- =================================================
+                 SIDEBAR
+            ================================================== -->
+
+            <aside class="profile-sidebar">
+
+
+                <div class="profile-avatar-wrapper">
+
+                    <div class="profile-avatar-ring"></div>
+
+
+                    <div class="profile-avatar">
+
+                        {% if profile.profile_picture %}
+
+                            <img
+                                src="{{ profile.profile_picture.url }}"
+                                alt="Profile picture"
+                            >
+
+                        {% else %}
+
+                            <i class="fa-solid fa-user"></i>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="profile-user-info">
+
+                    <h2>
+                        {{ request.user.username }}
+                    </h2>
+
+                    <p>
+                        {{ request.user.email }}
+                    </p>
+
+
+                    <div class="profile-verified">
+
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        Account Verified
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="profile-side-info">
+
+
+                    <div class="profile-side-item">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                        <span>
+                            Your health information is
+                            securely stored.
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="profile-side-item">
+
+                        <i class="fa-solid fa-heart-pulse"></i>
+
+                        <span>
+                            Keep your health data
+                            updated for better assistance.
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="profile-side-item">
+
+                        <i class="fa-solid fa-user-shield"></i>
+
+                        <span>
+                            Only you can manage
+                            your personal profile.
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+            </aside>
+
+
+
+            <!-- =================================================
+                 FORM
+            ================================================== -->
+
+            <section class="profile-form-section">
+
+
+                <div class="profile-form-header">
+
+                    <div>
+
+                        <h2>
+                            Personal Health Information
+                        </h2>
+
+                        <p>
+                            Complete your profile to improve
+                            your AI health experience.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- MESSAGES -->
+
+                {% if messages %}
+
+                    {% for message in messages %}
+
+                        <div class="profile-message">
+
+                            <i class="fa-solid fa-circle-check"></i>
+
+                            <span>
+                                {{ message }}
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+
+
+                <!-- FORM -->
+
+                <form
+                    method="POST"
+                    enctype="multipart/form-data"
+                >
+
+                    {% csrf_token %}
+
+
+                    <div class="profile-form-grid">
+
+
+                        <!-- =================================================
+                             PERSONAL DETAILS
+                        ================================================== -->
+
+                        <div class="profile-section-title">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            Personal Details
+
+                        </div>
+
+
+
+                        <!-- PHONE -->
+
+                        <div class="profile-form-group">
+
+                            <label
+                                for="{{ form.phone_number.id_for_label }}"
+                            >
+                                Phone Number
+                            </label>
+
+
+                            <div class="profile-input-wrapper">
+
+                                <i
+                                    class="fa-solid fa-phone profile-input-icon"
+                                ></i>
+
+                                {{ form.phone_number }}
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- DATE OF BIRTH -->
+
+                        <div class="profile-form-group">
+
+                            <label
+                                for="{{ form.date_of_birth.id_for_label }}"
+                            >
+                                Date of Birth
+                            </label>
+
+
+                            <div class="profile-input-wrapper">
+
+                                <i
+                                    class="fa-solid fa-calendar profile-input-icon"
+                                ></i>
+
+                                {{ form.date_of_birth }}
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- GENDER -->
+
+                        <div class="profile-form-group">
+
+                            <label
+                                for="{{ form.gender.id_for_label }}"
+                            >
+                                Gender
+                            </label>
+
+
+                            <div class="profile-input-wrapper">
+
+                                <i
+                                    class="fa-solid fa-venus-mars profile-input-icon"
+                                ></i>
+
+                                {{ form.gender }}
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- BLOOD GROUP -->
+
+                        <div class="profile-form-group">
+
+                            <label
+                                for="{{ form.blood_group.id_for_label }}"
+                            >
+                                Blood Group
+                            </label>
+
+
+                            <div class="profile-input-wrapper">
+
+                                <i
+                                    class="fa-solid fa-droplet profile-input-icon"
+                                ></i>
+
+                                {{ form.blood_group }}
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =================================================
+                             HEALTH MEASUREMENTS
+                        ================================================== -->
+
+                        <div class="profile-section-title">
+
+                            <i class="fa-solid fa-heart-pulse"></i>
+
+                            Health Measurements
+
+                        </div>
+
+
+
+                        <!-- HEIGHT -->
+
+                        <div class="profile-form-group">
+
+                            <label
+                                for="{{ form.height.id_for_label }}"
+                            >
+                                Height
+                            </label>
+
+
+                            <div class="profile-input-wrapper">
+
+                                <i
+                                    class="fa-solid fa-ruler-vertical profile-input-icon"
+                                ></i>
+
+                                {{ form.height }}
+
+                            </div>
+
+
+                            <span class="profile-help">
+                                Enter your height in centimeters.
+                            </span>
+
+                        </div>
+
+
+
+                        <!-- WEIGHT -->
+
+                        <div class="profile-form-group">
+
+                            <label
+                                for="{{ form.weight.id_for_label }}"
+                            >
+                                Weight
+                            </label>
+
+
+                            <div class="profile-input-wrapper">
+
+                                <i
+                                    class="fa-solid fa-weight-scale profile-input-icon"
+                                ></i>
+
+                                {{ form.weight }}
+
+                            </div>
+
+
+                            <span class="profile-help">
+                                Enter your weight in kilograms.
+                            </span>
+
+                        </div>
+
+
+
+                        <!-- =================================================
+                             BMI CARD
+                        ================================================== -->
+
+                        <div
+                            class="bmi-card"
+                            id="bmiCard"
+                        >
+
+
+                            <div class="bmi-icon">
+
+                                <i
+                                    class="fa-solid fa-heart-pulse"
+                                ></i>
+
+                            </div>
+
+
+
+                            <div class="bmi-content">
+
+                                <span class="bmi-label">
+                                    Body Mass Index
+                                </span>
+
+
+                                <strong id="bmiValue">
+                                    --
+                                </strong>
+
+
+                                <span id="bmiStatus">
+                                    Enter your height and weight
+                                </span>
+
+                            </div>
+
+
+
+                            <div class="bmi-indicator">
+
+
+                                <div class="bmi-bar">
+
+                                    <span
+                                        id="bmiProgress"
+                                    ></span>
+
+                                </div>
+
+
+                                <div class="bmi-scale">
+
+                                    <span>
+                                        Underweight
+                                    </span>
+
+                                    <span>
+                                        Normal
+                                    </span>
+
+                                    <span>
+                                        Overweight
+                                    </span>
+
+                                    <span>
+                                        Obese
+                                    </span>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =================================================
+                             PROFILE PICTURE
+                        ================================================== -->
+
+                        <div class="profile-form-group full-width">
+
+                            <label>
+                                Profile Picture
+                            </label>
+
+
+                            <div class="profile-upload-area">
+
+
+                                <div class="profile-upload-preview">
+
+                                    {% if profile.profile_picture %}
+
+                                        <img
+                                            id="profilePreview"
+                                            src="{{ profile.profile_picture.url }}"
+                                            alt="Profile picture"
+                                        >
+
+                                    {% else %}
+
+                                        <div
+                                            id="profilePreviewPlaceholder"
+                                            class="profile-upload-placeholder"
+                                        >
+
+                                            <i
+                                                class="fa-solid fa-user"
+                                            ></i>
+
+                                        </div>
+
+
+                                        <img
+                                            id="profilePreview"
+                                            src=""
+                                            alt="Profile preview"
+                                            style="display:none;"
+                                        >
+
+                                    {% endif %}
+
+                                </div>
+
+
+
+                                <div class="profile-upload-content">
+
+
+                                    <strong>
+                                        Upload your profile picture
+                                    </strong>
+
+
+                                    <span>
+                                        Choose a clear photo for your
+                                        health profile.
+                                    </span>
+
+
+                                    <label
+                                        for="{{ form.profile_picture.id_for_label }}"
+                                        class="profile-upload-btn"
+                                    >
+
+                                        <i
+                                            class="fa-solid fa-cloud-arrow-up"
+                                        ></i>
+
+                                        Choose Picture
+
+                                    </label>
+
+
+                                    {{ form.profile_picture }}
+
+
+                                    <small>
+                                        JPG, PNG or WEBP
+                                        • Maximum recommended size: 5 MB
+                                    </small>
+
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- =================================================
+                             SAVE BUTTON
+                        ================================================== -->
+
+                        <button
+                            type="submit"
+                            class="profile-save-btn"
+                        >
+
+                            <i
+                                class="fa-solid fa-floppy-disk"
+                            ></i>
+
+                            Save Health Profile
+
+                        </button>
+
+
+                    </div>
+
+                </form>
+
+            </section>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     BMI JAVASCRIPT
+========================================================= -->
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        const heightInput =
+            document.getElementById("id_height");
+
+
+        const weightInput =
+            document.getElementById("id_weight");
+
+
+        const bmiValue =
+            document.getElementById("bmiValue");
+
+
+        const bmiStatus =
+            document.getElementById("bmiStatus");
+
+
+        const bmiProgress =
+            document.getElementById("bmiProgress");
+
+
+
+        function calculateBMI() {
+
+
+            if (
+                !heightInput ||
+                !weightInput ||
+                !bmiValue ||
+                !bmiStatus ||
+                !bmiProgress
+            ) {
+                return;
+            }
+
+
+            const height =
+                parseFloat(
+                    heightInput.value
+                );
+
+
+            const weight =
+                parseFloat(
+                    weightInput.value
+                );
+
+
+
+            if (
+                !height ||
+                !weight ||
+                height <= 0 ||
+                weight <= 0
+            ) {
+
+                bmiValue.textContent =
+                    "--";
+
+                bmiStatus.textContent =
+                    "Enter your height and weight";
+
+                bmiProgress.style.left =
+                    "0%";
+
+                return;
+            }
+
+
+
+            const heightInMeters =
+                height / 100;
+
+
+
+            const bmi =
+                weight /
+                (
+                    heightInMeters *
+                    heightInMeters
+                );
+
+
+
+            bmiValue.textContent =
+                bmi.toFixed(1);
+
+
+
+            let status = "";
+            let position = "0%";
+
+
+
+            if (bmi < 18.5) {
+
+                status =
+                    "Underweight";
+
+                position =
+                    "12%";
+
+            }
+
+            else if (bmi < 25) {
+
+                status =
+                    "Normal weight";
+
+                position =
+                    "38%";
+
+            }
+
+            else if (bmi < 30) {
+
+                status =
+                    "Overweight";
+
+                position =
+                    "65%";
+
+            }
+
+            else {
+
+                status =
+                    "Obesity";
+
+                position =
+                    "90%";
+
+            }
+
+
+
+            bmiStatus.textContent =
+                status;
+
+
+            bmiProgress.style.left =
+                position;
+
+        }
+
+
+
+        if (
+            heightInput &&
+            weightInput
+        ) {
+
+            heightInput.addEventListener(
+                "input",
+                calculateBMI
+            );
+
+
+            weightInput.addEventListener(
+                "input",
+                calculateBMI
+            );
+
+
+            calculateBMI();
+
+        }
+
+
+        /* =====================================================
+           PROFILE IMAGE PREVIEW
+        ===================================================== */
+
+        const fileInput =
+            document.getElementById(
+                "{{ form.profile_picture.id_for_label }}"
+            );
+
+
+        const preview =
+            document.getElementById(
+                "profilePreview"
+            );
+
+
+        const placeholder =
+            document.getElementById(
+                "profilePreviewPlaceholder"
+            );
+
+
+
+        if (fileInput) {
+
+            fileInput.addEventListener(
+                "change",
+                function () {
+
+
+                    const file =
+                        this.files[0];
+
+
+                    if (!file) {
+                        return;
+                    }
+
+
+
+                    if (
+                        !file.type.startsWith(
+                            "image/"
+                        )
+                    ) {
+
+                        alert(
+                            "Please select a valid image file."
+                        );
+
+                        this.value = "";
+
+                        return;
+                    }
+
+
+
+                    const reader =
+                        new FileReader();
+
+
+
+                    reader.onload =
+                        function (event) {
+
+
+                            if (preview) {
+
+                                preview.src =
+                                    event.target.result;
+
+                                preview.style.display =
+                                    "block";
+
+                            }
+
+
+                            if (placeholder) {
+
+                                placeholder.style.display =
+                                    "none";
+
+                            }
+
+                        };
+
+
+
+                    reader.readAsDataURL(
+                        file
+                    );
+
+                }
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}

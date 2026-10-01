@@ -1,0 +1,3721 @@
+{% extends "assist/base.html" %}
+{% load static %}
+
+
+{% block title %}
+    Health Records | AI Health Assistant
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/health_records.css' %}"
+>
+
+
+<style>
+
+/* =========================================================
+   MODAL SCROLL FIX
+========================================================= */
+
+.record-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+.record-modal[hidden] {
+    display: none;
+}
+
+
+.record-modal-overlay {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(3, 28, 41, 0.72);
+
+    backdrop-filter: blur(7px);
+}
+
+
+.record-modal-content {
+    position: relative;
+    z-index: 2;
+
+    width: min(760px, 100%);
+
+    max-height: calc(100vh - 40px);
+
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+
+    border-radius: 24px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.28);
+}
+
+
+/* HEADER */
+
+.record-modal-header {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 22px 26px;
+
+    border-bottom: 1px solid #e4eef1;
+
+    background: #f8fcfd;
+}
+
+
+/* BODY SCROLL */
+
+.record-modal-body {
+    flex: 1;
+
+    min-height: 0;
+
+    overflow-y: auto;
+
+    padding: 26px;
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        #8bcbd0
+        #edf5f6;
+}
+
+
+/* Chrome / Edge scrollbar */
+
+.record-modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.record-modal-body::-webkit-scrollbar-track {
+    background: #edf5f6;
+}
+
+.record-modal-body::-webkit-scrollbar-thumb {
+    background: #8bcbd0;
+    border-radius: 10px;
+}
+
+.record-modal-body::-webkit-scrollbar-thumb:hover {
+    background: #1596a1;
+}
+
+
+/* FOOTER */
+
+.record-modal-footer {
+    flex-shrink: 0;
+
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    padding: 18px 26px;
+
+    border-top: 1px solid #e4eef1;
+
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   RECORD VIEWER
+========================================================= */
+
+.record-viewer {
+    position: fixed;
+    inset: 0;
+
+    z-index: 10000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+.record-viewer[hidden] {
+    display: none;
+}
+
+
+.record-viewer-overlay {
+    position: absolute;
+    inset: 0;
+
+    background: rgba(3, 28, 41, 0.74);
+
+    backdrop-filter: blur(7px);
+}
+
+
+.record-viewer-content {
+    position: relative;
+    z-index: 2;
+
+    width: min(820px, 100%);
+
+    max-height: calc(100vh - 40px);
+
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+
+    border-radius: 24px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.28);
+}
+
+
+.record-viewer-header {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 22px 26px;
+
+    border-bottom: 1px solid #e4eef1;
+
+    background: #f8fcfd;
+}
+
+
+.record-viewer-body {
+    overflow-y: auto;
+
+    padding: 28px;
+
+    max-height: calc(100vh - 140px);
+}
+
+
+/* =========================================================
+   VIEWER CONTENT
+========================================================= */
+
+.viewer-type {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 7px 12px;
+
+    border-radius: 999px;
+
+    background: #e7f7f8;
+
+    color: #138c98;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+.viewer-title {
+    margin: 14px 0 7px;
+
+    color: #143e60;
+
+    font-size: 30px;
+
+    line-height: 1.25;
+}
+
+
+.viewer-date {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 24px;
+
+    color: #72899a;
+
+    font-size: 14px;
+}
+
+
+.viewer-description {
+    margin-bottom: 22px;
+
+    color: #617b8c;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   VIEWER DETAILS
+========================================================= */
+
+.viewer-details {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+
+.viewer-detail {
+    padding: 16px;
+
+    border: 1px solid #e3edf0;
+
+    border-radius: 15px;
+
+    background: #f9fcfd;
+}
+
+
+.viewer-detail-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 10px;
+
+    border-radius: 11px;
+
+    background: #e7f7f8;
+
+    color: #128f9a;
+}
+
+
+.viewer-detail-label {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #7b909e;
+
+    font-size: 12px;
+}
+
+
+.viewer-detail-value {
+    display: block;
+
+    color: #214b67;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   DOCUMENT BOX
+========================================================= */
+
+.document-box {
+    margin-top: 22px;
+
+    padding: 20px;
+
+    border: 1px solid #dcecef;
+
+    border-radius: 17px;
+
+    background: #f7fcfd;
+}
+
+
+.document-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    margin-bottom: 15px;
+}
+
+
+.document-icon {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 13px;
+
+    background: #e3f6f7;
+
+    color: #128e99;
+
+    font-size: 18px;
+}
+
+
+.document-info strong {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: #173f60;
+
+    font-size: 15px;
+}
+
+
+.document-info span {
+    color: #78909f;
+
+    font-size: 12px;
+}
+
+
+/* OPEN DOCUMENT BUTTON */
+
+.open-document-btn {
+    width: 100%;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    padding: 12px 16px;
+
+    border-radius: 11px;
+
+    background: #1596a1;
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.open-document-btn:hover {
+    background: #117d87;
+
+    transform: translateY(-1px);
+
+    color: #ffffff;
+}
+
+
+/* NO DOCUMENT */
+
+.no-document {
+    margin-top: 22px;
+
+    padding: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    border-radius: 13px;
+
+    background: #f6f8f9;
+
+    color: #778b96;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   NOTES
+========================================================= */
+
+.viewer-notes {
+    margin-top: 20px;
+
+    padding: 17px;
+
+    border-left: 4px solid #1596a1;
+
+    border-radius: 10px;
+
+    background: #eefafb;
+
+    color: #496c7c;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   SUMMARY CLICKABLE
+========================================================= */
+
+.summary-card-clickable {
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.summary-card-clickable:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 14px 30px rgba(8, 76, 96, 0.14);
+}
+
+
+/* =========================================================
+   SUMMARY VIEW
+========================================================= */
+
+.summary-view-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+
+.summary-view-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 15px;
+
+    border: 1px solid #e3edf0;
+
+    border-radius: 15px;
+
+    background: #fbfdfe;
+}
+
+
+.summary-view-icon {
+    width: 45px;
+    height: 45px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #e7f7f8;
+
+    color: #128f99;
+}
+
+
+.summary-view-info {
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+.summary-view-info h3 {
+    margin: 5px 0;
+
+    color: #173f60;
+
+    font-size: 15px;
+}
+
+
+.summary-view-info p {
+    margin: 3px 0;
+
+    color: #778e9d;
+
+    font-size: 12px;
+}
+
+
+.summary-view-actions {
+    display: flex;
+
+    gap: 7px;
+}
+
+
+.summary-small-btn {
+    width: 38px;
+    height: 38px;
+
+    border: 0;
+
+    border-radius: 10px;
+
+    background: #edf8f9;
+
+    color: #128f99;
+
+    cursor: pointer;
+}
+
+
+.summary-small-btn:hover {
+    background: #128f99;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .record-modal {
+        padding: 10px;
+    }
+
+    .record-modal-content {
+        max-height: calc(100vh - 20px);
+
+        border-radius: 19px;
+    }
+
+    .record-modal-body {
+        padding: 20px;
+    }
+
+    .record-modal-footer {
+        padding: 15px 20px;
+    }
+
+    .record-viewer {
+        padding: 10px;
+    }
+
+    .record-viewer-content {
+        max-height: calc(100vh - 20px);
+
+        border-radius: 19px;
+    }
+
+    .record-viewer-body {
+        padding: 20px;
+    }
+
+    .viewer-details {
+        grid-template-columns: 1fr;
+    }
+
+    .viewer-title {
+        font-size: 24px;
+    }
+
+}
+
+
+/* =========================================================
+   BODY LOCK
+========================================================= */
+
+body.modal-open {
+    overflow: hidden;
+}
+
+</style>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="health-records-page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <section class="health-records-header">
+
+        <div class="health-records-header-content">
+
+            <div class="page-icon">
+
+                <i class="fa-solid fa-file-medical"></i>
+
+            </div>
+
+
+            <div>
+
+                <span class="page-kicker">
+                    HEALTH MANAGEMENT
+                </span>
+
+
+                <h1>
+                    Health Records
+                </h1>
+
+
+                <p>
+                    Keep your medical history, reports, diagnoses
+                    and healthcare information organized in one place.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="add-record-btn"
+            id="addRecordButton"
+        >
+
+            <i class="fa-solid fa-plus"></i>
+
+            Add Health Record
+
+        </button>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SUMMARY CARDS
+    ====================================================== -->
+
+    <section class="records-summary">
+
+
+        <!-- TOTAL -->
+
+        <div
+            class="summary-card summary-card-clickable"
+            id="totalRecordsCard"
+            role="button"
+            tabindex="0"
+        >
+
+            <div class="summary-icon">
+
+                <i class="fa-solid fa-file-medical"></i>
+
+            </div>
+
+
+            <div class="summary-content">
+
+                <span class="summary-label">
+                    Total Records
+                </span>
+
+
+                <strong id="totalRecords">
+                    {{ records|length }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- MEDICAL REPORTS -->
+
+        <div
+            class="summary-card summary-card-clickable"
+            id="medicalReportsCard"
+            role="button"
+            tabindex="0"
+        >
+
+            <div class="summary-icon">
+
+                <i class="fa-solid fa-stethoscope"></i>
+
+            </div>
+
+
+            <div class="summary-content">
+
+                <span class="summary-label">
+                    Medical Reports
+                </span>
+
+
+                <strong id="medicalReports">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- PRESCRIPTIONS -->
+
+        <div
+            class="summary-card summary-card-clickable"
+            id="prescriptionsCard"
+            role="button"
+            tabindex="0"
+        >
+
+            <div class="summary-icon">
+
+                <i class="fa-solid fa-prescription-bottle-medical"></i>
+
+            </div>
+
+
+            <div class="summary-content">
+
+                <span class="summary-label">
+                    Prescriptions
+                </span>
+
+
+                <strong id="prescriptions">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- RECENT ACTIVITY -->
+
+        <div
+            class="summary-card summary-card-clickable"
+            id="recentActivityCard"
+            role="button"
+            tabindex="0"
+        >
+
+            <div class="summary-icon">
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+            </div>
+
+
+            <div class="summary-content">
+
+                <span class="summary-label">
+                    Recent Activity
+                </span>
+
+
+                <strong id="recentActivity">
+                    {{ records|length }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SEARCH / FILTER
+    ====================================================== -->
+
+    <section class="records-toolbar">
+
+        <div class="records-search">
+
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+
+            <input
+                type="search"
+                id="recordSearch"
+                placeholder="Search health records..."
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="records-filter">
+
+            <label for="recordTypeFilter">
+
+                <i class="fa-solid fa-filter"></i>
+
+                Record Type
+
+            </label>
+
+
+            <select id="recordTypeFilter">
+
+                <option value="all">
+                    All Records
+                </option>
+
+                <option value="Diagnosis">
+                    Diagnosis
+                </option>
+
+                <option value="Prescription">
+                    Prescription
+                </option>
+
+                <option value="Lab Report">
+                    Lab Report
+                </option>
+
+                <option value="Medical Report">
+                    Medical Report
+                </option>
+
+                <option value="Hospital Visit">
+                    Hospital Visit
+                </option>
+
+                <option value="Surgery">
+                    Surgery
+                </option>
+
+                <option value="Vaccination">
+                    Vaccination
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
+            </select>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RECORDS
+    ====================================================== -->
+
+    <section class="records-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-kicker">
+                    MEDICAL HISTORY
+                </span>
+
+
+                <h2>
+                    Your Health Records
+                </h2>
+
+
+                <p>
+                    Access and manage your important healthcare records.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div
+            class="records-grid"
+            id="recordsGrid"
+        >
+
+
+            {% for record in records %}
+
+
+            <!-- =================================================
+                 RECORD CARD
+            ================================================== -->
+
+            <article
+                class="health-record-card"
+
+                data-record-id="{{ record.id }}"
+
+                data-record-type="{{ record.record_type }}"
+
+                data-record-title="{{ record.title|lower }}"
+
+                data-record-date="{{ record.record_date|date:'d M Y' }}"
+
+                data-record-description="{{ record.description|default:'' }}"
+
+                data-record-doctor="{{ record.doctor_name|default:'' }}"
+
+                data-record-hospital="{{ record.hospital_name|default:'' }}"
+
+                data-record-diagnosis="{{ record.diagnosis|default:'' }}"
+
+                data-record-notes="{{ record.notes|default:'' }}"
+
+                data-record-attachment="{% if record.attachment %}{{ record.attachment.url }}{% endif %}"
+            >
+
+
+                <!-- HEADER -->
+
+                <div class="record-card-header">
+
+                    <div class="record-header-left">
+
+
+                        {% if record.record_type == "Medical Report" %}
+
+                            <div class="record-type-icon medical-report">
+
+                                <i class="fa-solid fa-file-medical"></i>
+
+                            </div>
+
+
+                        {% elif record.record_type == "Lab Report" %}
+
+                            <div class="record-type-icon lab-report">
+
+                                <i class="fa-solid fa-flask"></i>
+
+                            </div>
+
+
+                        {% elif record.record_type == "Prescription" %}
+
+                            <div class="record-type-icon prescription">
+
+                                <i class="fa-solid fa-prescription-bottle-medical"></i>
+
+                            </div>
+
+
+                        {% elif record.record_type == "Diagnosis" %}
+
+                            <div class="record-type-icon diagnosis">
+
+                                <i class="fa-solid fa-stethoscope"></i>
+
+                            </div>
+
+
+                        {% elif record.record_type == "Hospital Visit" %}
+
+                            <div class="record-type-icon hospital-visit">
+
+                                <i class="fa-solid fa-hospital"></i>
+
+                            </div>
+
+
+                        {% elif record.record_type == "Surgery" %}
+
+                            <div class="record-type-icon surgery">
+
+                                <i class="fa-solid fa-user-doctor"></i>
+
+                            </div>
+
+
+                        {% elif record.record_type == "Vaccination" %}
+
+                            <div class="record-type-icon vaccination">
+
+                                <i class="fa-solid fa-syringe"></i>
+
+                            </div>
+
+
+                        {% else %}
+
+                            <div class="record-type-icon other">
+
+                                <i class="fa-solid fa-file-medical"></i>
+
+                            </div>
+
+                        {% endif %}
+
+
+                        <span class="record-type-badge">
+
+                            {{ record.record_type }}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- BODY -->
+
+                <div class="record-card-body">
+
+                    <h3>
+                        {{ record.title }}
+                    </h3>
+
+
+                    {% if record.description %}
+
+                    <p class="record-description">
+
+                        {{ record.description }}
+
+                    </p>
+
+                    {% else %}
+
+                    <p class="record-description">
+
+                        No description provided for this health record.
+
+                    </p>
+
+                    {% endif %}
+
+
+
+                    <div class="record-details">
+
+
+                        <!-- DOCTOR -->
+
+                        <div class="record-detail">
+
+                            <i class="fa-solid fa-stethoscope"></i>
+
+                            <div>
+
+                                <span>
+                                    Doctor
+                                </span>
+
+
+                                <strong>
+
+                                    {% if record.doctor_name %}
+                                        {{ record.doctor_name }}
+                                    {% else %}
+                                        Not specified
+                                    {% endif %}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- HOSPITAL -->
+
+                        <div class="record-detail">
+
+                            <i class="fa-solid fa-hospital"></i>
+
+                            <div>
+
+                                <span>
+                                    Hospital
+                                </span>
+
+
+                                <strong>
+
+                                    {% if record.hospital_name %}
+                                        {{ record.hospital_name }}
+                                    {% else %}
+                                        Not specified
+                                    {% endif %}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- DATE -->
+
+                        <div class="record-detail">
+
+                            <i class="fa-solid fa-calendar-days"></i>
+
+                            <div>
+
+                                <span>
+                                    Record Date
+                                </span>
+
+
+                                <strong>
+                                    {{ record.record_date|date:"d M Y" }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- DIAGNOSIS -->
+
+                        <div class="record-detail">
+
+                            <i class="fa-solid fa-notes-medical"></i>
+
+                            <div>
+
+                                <span>
+                                    Diagnosis
+                                </span>
+
+
+                                <strong>
+
+                                    {% if record.diagnosis %}
+                                        {{ record.diagnosis }}
+                                    {% else %}
+                                        Not specified
+                                    {% endif %}
+
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- NOTES -->
+
+                    {% if record.notes %}
+
+                    <div class="record-notes">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                        <span>
+                            {{ record.notes }}
+                        </span>
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- FOOTER -->
+
+                <div class="record-card-footer">
+
+
+                    <!-- DOCUMENT -->
+
+                    <div class="record-attachment">
+
+                        {% if record.attachment %}
+
+                        <a
+                            href="{{ record.attachment.url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="record-attachment-link"
+                        >
+
+                            <i class="fa-solid fa-file-arrow-up"></i>
+
+                            <span>
+                                Open document
+                            </span>
+
+                        </a>
+
+                        {% else %}
+
+                        <span>
+
+                            <i class="fa-solid fa-file-circle-xmark"></i>
+
+                            No document
+
+                        </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+
+                    <!-- ACTIONS -->
+
+                    <div class="record-actions">
+
+
+                        <!-- VIEW -->
+
+                        <button
+                            type="button"
+                            class="record-action-btn view-record"
+                            title="View record"
+                            data-record-id="{{ record.id }}"
+                        >
+
+                            <i class="fa-solid fa-eye"></i>
+
+                        </button>
+
+
+                        <!-- EDIT -->
+
+                        <button
+                            type="button"
+                            class="record-action-btn edit-record"
+                            title="Edit record"
+                            data-record-id="{{ record.id }}"
+                        >
+
+                            <i class="fa-solid fa-pen"></i>
+
+                        </button>
+
+
+                        <!-- DELETE -->
+
+                        <button
+                            type="button"
+                            class="record-action-btn delete-record"
+                            title="Delete record"
+                            data-record-id="{{ record.id }}"
+                        >
+
+                            <i class="fa-solid fa-trash"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </article>
+
+
+            {% empty %}
+
+
+            <!-- EMPTY -->
+
+            <div
+                class="records-empty-state"
+                id="recordsEmptyState"
+            >
+
+                <div class="empty-state-icon">
+
+                    <i class="fa-solid fa-folder-open"></i>
+
+                </div>
+
+
+                <h3>
+                    No health records found
+                </h3>
+
+
+                <p>
+                    You have not added any health records yet.
+                    Create your first health record to get started.
+                </p>
+
+
+                <button
+                    type="button"
+                    class="empty-state-btn"
+                    id="emptyAddRecordButton"
+                >
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Add Health Record
+
+                </button>
+
+            </div>
+
+            {% endfor %}
+
+
+
+            <!-- FILTER EMPTY -->
+
+            <div
+                class="records-empty-state"
+                id="recordsFilterEmptyState"
+                hidden
+            >
+
+                <div class="empty-state-icon">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                </div>
+
+
+                <h3>
+                    No matching records
+                </h3>
+
+
+                <p>
+                    No health records match your current search or filter.
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         INFORMATION
+    ====================================================== -->
+
+    <section class="records-information">
+
+        <div class="information-icon">
+
+            <i class="fa-solid fa-shield-heart"></i>
+
+        </div>
+
+
+        <div class="information-content">
+
+            <h3>
+                Keep your health information organized
+            </h3>
+
+
+            <p>
+                Store important medical reports, diagnoses,
+                prescriptions and hospital information securely
+                so they can be accessed when needed.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         ADD RECORD MODAL
+    ====================================================== -->
+
+    <div
+        class="record-modal"
+        id="recordModal"
+        hidden
+    >
+
+        <div
+            class="record-modal-overlay"
+            id="recordModalOverlay"
+        ></div>
+
+
+        <div
+            class="record-modal-content"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="recordModalTitle"
+        >
+
+
+            <form
+                id="healthRecordForm"
+                method="POST"
+                action="{% url 'health_record_add' %}"
+                enctype="multipart/form-data"
+            >
+
+                {% csrf_token %}
+
+
+                <!-- HEADER -->
+
+                <div class="record-modal-header">
+
+                    <div>
+
+                        <span class="modal-kicker">
+                            HEALTH MANAGEMENT
+                        </span>
+
+
+                        <h2 id="recordModalTitle">
+                            Add Health Record
+                        </h2>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="modal-close-btn"
+                        id="closeRecordModal"
+                    >
+
+                        <i class="fa-solid fa-xmark"></i>
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- SCROLLABLE BODY -->
+
+                <div class="record-modal-body">
+
+
+                    <!-- TITLE -->
+
+                    <div class="form-field">
+
+                        <label for="recordTitle">
+                            Record Title
+                        </label>
+
+
+                        <input
+                            type="text"
+                            name="title"
+                            id="recordTitle"
+                            placeholder="Enter record title"
+                            maxlength="200"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- TYPE + DATE -->
+
+                    <div class="form-row">
+
+
+                        <div class="form-field">
+
+                            <label for="recordType">
+                                Record Type
+                            </label>
+
+
+                            <select
+                                name="record_type"
+                                id="recordType"
+                                required
+                            >
+
+                                <option value="">
+                                    Select record type
+                                </option>
+
+                                <option value="Diagnosis">
+                                    Diagnosis
+                                </option>
+
+                                <option value="Prescription">
+                                    Prescription
+                                </option>
+
+                                <option value="Lab Report">
+                                    Lab Report
+                                </option>
+
+                                <option value="Medical Report">
+                                    Medical Report
+                                </option>
+
+                                <option value="Hospital Visit">
+                                    Hospital Visit
+                                </option>
+
+                                <option value="Surgery">
+                                    Surgery
+                                </option>
+
+                                <option value="Vaccination">
+                                    Vaccination
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <div class="form-field">
+
+                            <label for="recordDate">
+                                Record Date
+                            </label>
+
+
+                            <input
+                                type="date"
+                                name="record_date"
+                                id="recordDate"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- DOCTOR + HOSPITAL -->
+
+                    <div class="form-row">
+
+
+                        <div class="form-field">
+
+                            <label for="doctorName">
+                                Doctor Name
+                            </label>
+
+
+                            <input
+                                type="text"
+                                name="doctor_name"
+                                id="doctorName"
+                                placeholder="Enter doctor name"
+                                maxlength="200"
+                            >
+
+                        </div>
+
+
+
+                        <div class="form-field">
+
+                            <label for="hospitalName">
+                                Hospital Name
+                            </label>
+
+
+                            <input
+                                type="text"
+                                name="hospital_name"
+                                id="hospitalName"
+                                placeholder="Enter hospital name"
+                                maxlength="200"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- DIAGNOSIS -->
+
+                    <div class="form-field">
+
+                        <label for="diagnosis">
+                            Diagnosis
+                        </label>
+
+
+                        <input
+                            type="text"
+                            name="diagnosis"
+                            id="diagnosis"
+                            placeholder="Enter diagnosis"
+                            maxlength="300"
+                        >
+
+                    </div>
+
+
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="form-field">
+
+                        <label for="recordDescription">
+                            Description
+                        </label>
+
+
+                        <textarea
+                            name="description"
+                            id="recordDescription"
+                            rows="4"
+                            placeholder="Enter medical record description"
+                        ></textarea>
+
+                    </div>
+
+
+
+                    <!-- NOTES -->
+
+                    <div class="form-field">
+
+                        <label for="recordNotes">
+                            Notes
+                        </label>
+
+
+                        <textarea
+                            name="notes"
+                            id="recordNotes"
+                            rows="3"
+                            placeholder="Add additional notes"
+                        ></textarea>
+
+                    </div>
+
+
+
+                    <!-- ATTACHMENT -->
+
+                    <div class="form-field">
+
+                        <label for="recordAttachment">
+
+                            <i class="fa-solid fa-paperclip"></i>
+
+                            Upload Health Document
+
+                        </label>
+
+
+                        <input
+                            type="file"
+                            name="attachment"
+                            id="recordAttachment"
+                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                        >
+
+
+                        <small>
+                            Upload your medical report,
+                            prescription, lab report or other document.
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- FOOTER -->
+
+                <div class="record-modal-footer">
+
+                    <button
+                        type="button"
+                        class="modal-secondary-btn"
+                        id="cancelRecordModal"
+                    >
+
+                        Cancel
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="modal-primary-btn"
+                        id="saveRecordButton"
+                    >
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Save Record
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         VIEW RECORD MODAL
+    ====================================================== -->
+
+    <div
+        class="record-viewer"
+        id="recordViewer"
+        hidden
+    >
+
+        <div
+            class="record-viewer-overlay"
+            id="recordViewerOverlay"
+        ></div>
+
+
+        <div
+            class="record-viewer-content"
+            role="dialog"
+            aria-modal="true"
+        >
+
+
+            <!-- HEADER -->
+
+            <div class="record-viewer-header">
+
+                <div>
+
+                    <span class="modal-kicker">
+                        HEALTH RECORD
+                    </span>
+
+
+                    <h2>
+                        Record Details
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="modal-close-btn"
+                    id="closeRecordViewer"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+
+
+            <!-- BODY -->
+
+            <div
+                class="record-viewer-body"
+                id="recordViewerBody"
+            >
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         SUMMARY VIEWER
+    ====================================================== -->
+
+    <div
+        class="record-viewer"
+        id="summaryViewer"
+        hidden
+    >
+
+        <div
+            class="record-viewer-overlay"
+            id="summaryViewerOverlay"
+        ></div>
+
+
+        <div
+            class="record-viewer-content"
+        >
+
+
+            <div class="record-viewer-header">
+
+                <div>
+
+                    <span class="modal-kicker">
+                        HEALTH MANAGEMENT
+                    </span>
+
+
+                    <h2 id="summaryViewerTitle">
+                        Health Records
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="modal-close-btn"
+                    id="closeSummaryViewer"
+                >
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                </button>
+
+            </div>
+
+
+            <div
+                class="record-viewer-body"
+                id="summaryViewerBody"
+            >
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+
+        /* =====================================================
+           BASIC ELEMENTS
+        ===================================================== */
+
+        const addButton =
+            document.getElementById(
+                "addRecordButton"
+            );
+
+
+        const emptyAddButton =
+            document.getElementById(
+                "emptyAddRecordButton"
+            );
+
+
+        const modal =
+            document.getElementById(
+                "recordModal"
+            );
+
+
+        const modalOverlay =
+            document.getElementById(
+                "recordModalOverlay"
+            );
+
+
+        const closeModalButton =
+            document.getElementById(
+                "closeRecordModal"
+            );
+
+
+        const cancelModalButton =
+            document.getElementById(
+                "cancelRecordModal"
+            );
+
+
+        const form =
+            document.getElementById(
+                "healthRecordForm"
+            );
+
+
+        const saveButton =
+            document.getElementById(
+                "saveRecordButton"
+            );
+
+
+
+        /* =====================================================
+           OPEN ADD RECORD
+        ===================================================== */
+
+        function openAddRecord() {
+
+            if (!modal) {
+                return;
+            }
+
+            form.reset();
+
+            document.getElementById(
+                "recordModalTitle"
+            ).textContent =
+                "Add Health Record";
+
+
+            form.action =
+                "{% url 'health_record_add' %}";
+
+
+            if (saveButton) {
+
+                saveButton.disabled =
+                    false;
+
+                saveButton.innerHTML =
+                    `
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Save Record
+                    `;
+
+            }
+
+
+            modal.hidden = false;
+
+            document.body.classList.add(
+                "modal-open"
+            );
+
+        }
+
+
+        if (addButton) {
+
+            addButton.addEventListener(
+                "click",
+                openAddRecord
+            );
+
+        }
+
+
+        if (emptyAddButton) {
+
+            emptyAddButton.addEventListener(
+                "click",
+                openAddRecord
+            );
+
+        }
+
+
+
+        /* =====================================================
+           CLOSE ADD MODAL
+        ===================================================== */
+
+        function closeModal() {
+
+            if (!modal) {
+                return;
+            }
+
+            modal.hidden = true;
+
+            document.body.classList.remove(
+                "modal-open"
+            );
+
+        }
+
+
+        if (closeModalButton) {
+
+            closeModalButton.addEventListener(
+                "click",
+                closeModal
+            );
+
+        }
+
+
+        if (cancelModalButton) {
+
+            cancelModalButton.addEventListener(
+                "click",
+                closeModal
+            );
+
+        }
+
+
+        if (modalOverlay) {
+
+            modalOverlay.addEventListener(
+                "click",
+                closeModal
+            );
+
+        }
+
+
+
+        /* =====================================================
+           FORM SUBMIT
+        ===================================================== */
+
+        if (form) {
+
+            form.addEventListener(
+                "submit",
+                function () {
+
+                    if (!saveButton) {
+                        return;
+                    }
+
+
+                    saveButton.disabled =
+                        true;
+
+
+                    saveButton.innerHTML =
+                        `
+                        <i class="fa-solid fa-spinner fa-spin"></i>
+                        Saving...
+                        `;
+
+                }
+            );
+
+        }
+
+
+
+        /* =====================================================
+           RECORD DATA
+        ===================================================== */
+
+        const recordCards =
+            Array.from(
+                document.querySelectorAll(
+                    ".health-record-card"
+                )
+            );
+
+
+
+        /* =====================================================
+           COUNTS
+        ===================================================== */
+
+        const medicalReports =
+            recordCards.filter(
+                function (record) {
+
+                    return (
+                        record.dataset.recordType ===
+                        "Medical Report"
+                    );
+
+                }
+            ).length;
+
+
+        const prescriptions =
+            recordCards.filter(
+                function (record) {
+
+                    return (
+                        record.dataset.recordType ===
+                        "Prescription"
+                    );
+
+                }
+            ).length;
+
+
+        document.getElementById(
+            "totalRecords"
+        ).textContent =
+            recordCards.length;
+
+
+        document.getElementById(
+            "medicalReports"
+        ).textContent =
+            medicalReports;
+
+
+        document.getElementById(
+            "prescriptions"
+        ).textContent =
+            prescriptions;
+
+
+        document.getElementById(
+            "recentActivity"
+        ).textContent =
+            Math.min(
+                recordCards.length,
+                5
+            );
+
+
+
+        /* =====================================================
+           SEARCH
+        ===================================================== */
+
+        const search =
+            document.getElementById(
+                "recordSearch"
+            );
+
+
+        const typeFilter =
+            document.getElementById(
+                "recordTypeFilter"
+            );
+
+
+        const filterEmpty =
+            document.getElementById(
+                "recordsFilterEmptyState"
+            );
+
+
+        function filterRecords() {
+
+            const searchText =
+                search
+                    ? search.value
+                        .trim()
+                        .toLowerCase()
+                    : "";
+
+
+            const selectedType =
+                typeFilter
+                    ? typeFilter.value
+                    : "all";
+
+
+            let visible =
+                0;
+
+
+            recordCards.forEach(
+                function (record) {
+
+                    const title =
+                        (
+                            record.dataset.recordTitle ||
+                            ""
+                        ).toLowerCase();
+
+
+                    const type =
+                        (
+                            record.dataset.recordType ||
+                            ""
+                        ).toLowerCase();
+
+
+                    const description =
+                        (
+                            record.dataset.recordDescription ||
+                            ""
+                        ).toLowerCase();
+
+
+                    const diagnosis =
+                        (
+                            record.dataset.recordDiagnosis ||
+                            ""
+                        ).toLowerCase();
+
+
+                    const doctor =
+                        (
+                            record.dataset.recordDoctor ||
+                            ""
+                        ).toLowerCase();
+
+
+                    const hospital =
+                        (
+                            record.dataset.recordHospital ||
+                            ""
+                        ).toLowerCase();
+
+
+                    const matchesSearch =
+                        !searchText ||
+                        title.includes(searchText) ||
+                        type.includes(searchText) ||
+                        description.includes(searchText) ||
+                        diagnosis.includes(searchText) ||
+                        doctor.includes(searchText) ||
+                        hospital.includes(searchText);
+
+
+                    const matchesType =
+                        selectedType === "all" ||
+                        record.dataset.recordType ===
+                            selectedType;
+
+
+                    if (
+                        matchesSearch &&
+                        matchesType
+                    ) {
+
+                        record.style.display =
+                            "";
+
+                        visible++;
+
+                    } else {
+
+                        record.style.display =
+                            "none";
+
+                    }
+
+                }
+            );
+
+
+            if (filterEmpty) {
+
+                filterEmpty.hidden =
+                    visible !== 0;
+
+            }
+
+        }
+
+
+        if (search) {
+
+            search.addEventListener(
+                "input",
+                filterRecords
+            );
+
+        }
+
+
+        if (typeFilter) {
+
+            typeFilter.addEventListener(
+                "change",
+                filterRecords
+            );
+
+        }
+
+
+
+        /* =====================================================
+           SAFE HTML
+        ===================================================== */
+
+        function escapeHTML(value) {
+
+            if (!value) {
+                return "";
+            }
+
+
+            const element =
+                document.createElement(
+                    "div"
+                );
+
+
+            element.textContent =
+                value;
+
+
+            return element.innerHTML;
+
+        }
+
+
+
+        /* =====================================================
+           OPEN ONE RECORD
+        ===================================================== */
+
+        const recordViewer =
+            document.getElementById(
+                "recordViewer"
+            );
+
+
+        const recordViewerBody =
+            document.getElementById(
+                "recordViewerBody"
+            );
+
+
+        function openRecord(record) {
+
+            const title =
+                record.dataset.recordTitle ||
+                "Health Record";
+
+
+            const type =
+                record.dataset.recordType ||
+                "Health Record";
+
+
+            const date =
+                record.dataset.recordDate ||
+                "Not specified";
+
+
+            const description =
+                record.dataset.recordDescription ||
+                "No description provided.";
+
+
+            const doctor =
+                record.dataset.recordDoctor ||
+                "Not specified";
+
+
+            const hospital =
+                record.dataset.recordHospital ||
+                "Not specified";
+
+
+            const diagnosis =
+                record.dataset.recordDiagnosis ||
+                "Not specified";
+
+
+            const notes =
+                record.dataset.recordNotes ||
+                "";
+
+
+            const attachment =
+                record.dataset.recordAttachment ||
+                "";
+
+
+            let documentHTML =
+                "";
+
+
+            if (attachment) {
+
+                documentHTML =
+
+                    `
+                    <div class="document-box">
+
+                        <div class="document-header">
+
+                            <div class="document-icon">
+
+                                <i class="fa-solid fa-file-medical"></i>
+
+                            </div>
+
+
+                            <div class="document-info">
+
+                                <strong>
+                                    Uploaded Health Document
+                                </strong>
+
+                                <span>
+                                    Your uploaded medical report
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <a
+                            href="${escapeHTML(attachment)}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="open-document-btn"
+                        >
+
+                            <i class="fa-solid fa-eye"></i>
+
+                            Open Uploaded Document
+
+                        </a>
+
+                    </div>
+                    `;
+
+            } else {
+
+                documentHTML =
+
+                    `
+                    <div class="no-document">
+
+                        <i class="fa-solid fa-file-circle-xmark"></i>
+
+                        No document has been uploaded for this record.
+
+                    </div>
+                    `;
+
+            }
+
+
+            recordViewerBody.innerHTML =
+
+                `
+
+                <span class="viewer-type">
+
+                    <i class="fa-solid fa-file-medical"></i>
+
+                    ${escapeHTML(type)}
+
+                </span>
+
+
+                <h1 class="viewer-title">
+
+                    ${escapeHTML(title)}
+
+                </h1>
+
+
+                <div class="viewer-date">
+
+                    <i class="fa-solid fa-calendar-days"></i>
+
+                    ${escapeHTML(date)}
+
+                </div>
+
+
+                <p class="viewer-description">
+
+                    ${escapeHTML(description)}
+
+                </p>
+
+
+                <div class="viewer-details">
+
+
+                    <div class="viewer-detail">
+
+                        <div class="viewer-detail-icon">
+
+                            <i class="fa-solid fa-user-doctor"></i>
+
+                        </div>
+
+                        <span class="viewer-detail-label">
+                            Doctor
+                        </span>
+
+                        <span class="viewer-detail-value">
+                            ${escapeHTML(doctor)}
+                        </span>
+
+                    </div>
+
+
+                    <div class="viewer-detail">
+
+                        <div class="viewer-detail-icon">
+
+                            <i class="fa-solid fa-hospital"></i>
+
+                        </div>
+
+                        <span class="viewer-detail-label">
+                            Hospital
+                        </span>
+
+                        <span class="viewer-detail-value">
+                            ${escapeHTML(hospital)}
+                        </span>
+
+                    </div>
+
+
+                    <div class="viewer-detail">
+
+                        <div class="viewer-detail-icon">
+
+                            <i class="fa-solid fa-notes-medical"></i>
+
+                        </div>
+
+                        <span class="viewer-detail-label">
+                            Diagnosis
+                        </span>
+
+                        <span class="viewer-detail-value">
+                            ${escapeHTML(diagnosis)}
+                        </span>
+
+                    </div>
+
+
+                    <div class="viewer-detail">
+
+                        <div class="viewer-detail-icon">
+
+                            <i class="fa-solid fa-calendar-check"></i>
+
+                        </div>
+
+                        <span class="viewer-detail-label">
+                            Record Date
+                        </span>
+
+                        <span class="viewer-detail-value">
+                            ${escapeHTML(date)}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                ${
+                    notes
+                    ?
+                    `
+                    <div class="viewer-notes">
+
+                        <strong>
+
+                            <i class="fa-solid fa-circle-info"></i>
+
+                            Notes
+
+                        </strong>
+
+                        <br><br>
+
+                        ${escapeHTML(notes)}
+
+                    </div>
+                    `
+                    :
+                    ""
+                }
+
+
+                ${documentHTML}
+
+                `;
+
+
+            recordViewer.hidden =
+                false;
+
+
+            document.body.classList.add(
+                "modal-open"
+            );
+
+        }
+
+
+
+        /* =====================================================
+           VIEW BUTTONS
+        ===================================================== */
+
+        document.querySelectorAll(
+            ".view-record"
+        ).forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const id =
+                            this.dataset.recordId;
+
+
+                        const record =
+                            document.querySelector(
+                                `.health-record-card[data-record-id="${id}"]`
+                            );
+
+
+                        if (record) {
+
+                            openRecord(
+                                record
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           DIRECT DOCUMENT OPEN
+        ===================================================== */
+
+        document.querySelectorAll(
+            ".record-attachment-link"
+        ).forEach(
+            function (link) {
+
+                link.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.stopPropagation();
+
+                    }
+                );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           CLOSE RECORD VIEWER
+        ===================================================== */
+
+        const closeViewer =
+            document.getElementById(
+                "closeRecordViewer"
+            );
+
+
+        const viewerOverlay =
+            document.getElementById(
+                "recordViewerOverlay"
+            );
+
+
+        function closeRecordViewer() {
+
+            recordViewer.hidden =
+                true;
+
+            document.body.classList.remove(
+                "modal-open"
+            );
+
+        }
+
+
+        if (closeViewer) {
+
+            closeViewer.addEventListener(
+                "click",
+                closeRecordViewer
+            );
+
+        }
+
+
+        if (viewerOverlay) {
+
+            viewerOverlay.addEventListener(
+                "click",
+                closeRecordViewer
+            );
+
+        }
+
+
+
+        /* =====================================================
+           SUMMARY VIEWER
+        ===================================================== */
+
+        const summaryViewer =
+            document.getElementById(
+                "summaryViewer"
+            );
+
+
+        const summaryViewerBody =
+            document.getElementById(
+                "summaryViewerBody"
+            );
+
+
+        const summaryViewerTitle =
+            document.getElementById(
+                "summaryViewerTitle"
+            );
+
+
+        function openSummary(
+            title,
+            filterType = "all",
+            recent = false
+        ) {
+
+            let selected =
+                recordCards;
+
+
+            if (filterType !== "all") {
+
+                selected =
+                    selected.filter(
+                        function (record) {
+
+                            return (
+                                record.dataset.recordType ===
+                                filterType
+                            );
+
+                        }
+                    );
+
+            }
+
+
+            if (recent) {
+
+                selected =
+                    selected.slice(
+                        0,
+                        5
+                    );
+
+            }
+
+
+            summaryViewerTitle.textContent =
+                title;
+
+
+            if (selected.length === 0) {
+
+                summaryViewerBody.innerHTML =
+
+                    `
+                    <div class="records-empty-state">
+
+                        <div class="empty-state-icon">
+
+                            <i class="fa-solid fa-folder-open"></i>
+
+                        </div>
+
+
+                        <h3>
+                            No records found
+                        </h3>
+
+
+                        <p>
+                            There are no records available here yet.
+                        </p>
+
+                    </div>
+                    `;
+
+            } else {
+
+                summaryViewerBody.innerHTML =
+
+                    `
+                    <div class="summary-view-list">
+
+                        ${
+                            selected
+                                .map(
+                                    function (record) {
+
+                                        const attachment =
+                                            record.dataset.recordAttachment ||
+                                            "";
+
+
+                                        return `
+
+                                        <div class="summary-view-item">
+
+                                            <div class="summary-view-icon">
+
+                                                <i class="fa-solid fa-file-medical"></i>
+
+                                            </div>
+
+
+                                            <div class="summary-view-info">
+
+                                                <span class="record-type-badge">
+
+                                                    ${escapeHTML(
+                                                        record.dataset.recordType
+                                                    )}
+
+                                                </span>
+
+
+                                                <h3>
+
+                                                    ${escapeHTML(
+                                                        record.dataset.recordTitle
+                                                    )}
+
+                                                </h3>
+
+
+                                                <p>
+
+                                                    <i class="fa-solid fa-calendar-days"></i>
+
+                                                    ${escapeHTML(
+                                                        record.dataset.recordDate
+                                                    )}
+
+                                                </p>
+
+
+                                                ${
+                                                    attachment
+                                                    ?
+                                                    `
+                                                    <a
+                                                        href="${escapeHTML(attachment)}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style="
+                                                            display:inline-flex;
+                                                            align-items:center;
+                                                            gap:6px;
+                                                            margin-top:6px;
+                                                            color:#138f99;
+                                                            font-size:12px;
+                                                            font-weight:700;
+                                                            text-decoration:none;
+                                                        "
+                                                    >
+
+                                                        <i class="fa-solid fa-eye"></i>
+
+                                                        Open Document
+
+                                                    </a>
+                                                    `
+                                                    :
+                                                    `
+                                                    <span
+                                                        style="
+                                                            display:block;
+                                                            margin-top:6px;
+                                                            color:#8a9aa3;
+                                                            font-size:12px;
+                                                        "
+                                                    >
+
+                                                        No document uploaded
+
+                                                    </span>
+                                                    `
+                                                }
+
+                                            </div>
+
+
+                                            <div class="summary-view-actions">
+
+
+                                                <button
+                                                    type="button"
+                                                    class="summary-small-btn summary-view-button"
+                                                    data-id="${record.dataset.recordId}"
+                                                    title="View record"
+                                                >
+
+                                                    <i class="fa-solid fa-eye"></i>
+
+                                                </button>
+
+
+                                                <button
+                                                    type="button"
+                                                    class="summary-small-btn summary-edit-button"
+                                                    data-id="${record.dataset.recordId}"
+                                                    title="Edit record"
+                                                >
+
+                                                    <i class="fa-solid fa-pen"></i>
+
+                                                </button>
+
+                                            </div>
+
+                                        </div>
+
+                                        `;
+
+                                    }
+                                )
+                                .join("")
+                        }
+
+                    </div>
+                    `;
+
+            }
+
+
+            summaryViewer.hidden =
+                false;
+
+
+            document.body.classList.add(
+                "modal-open"
+            );
+
+
+            /* SUMMARY VIEW */
+
+            summaryViewerBody
+                .querySelectorAll(
+                    ".summary-view-button"
+                )
+                .forEach(
+                    function (button) {
+
+                        button.addEventListener(
+                            "click",
+                            function () {
+
+                                const id =
+                                    this.dataset.id;
+
+
+                                const record =
+                                    document.querySelector(
+                                        `.health-record-card[data-record-id="${id}"]`
+                                    );
+
+
+                                closeSummary();
+
+
+                                if (record) {
+
+                                    openRecord(
+                                        record
+                                    );
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+
+            /* SUMMARY EDIT */
+
+            summaryViewerBody
+                .querySelectorAll(
+                    ".summary-edit-button"
+                )
+                .forEach(
+                    function (button) {
+
+                        button.addEventListener(
+                            "click",
+                            function () {
+
+                                const id =
+                                    this.dataset.id;
+
+
+                                const editButton =
+                                    document.querySelector(
+                                        `.edit-record[data-record-id="${id}"]`
+                                    );
+
+
+                                closeSummary();
+
+
+                                if (editButton) {
+
+                                    editButton.click();
+
+                                }
+
+                            }
+                        );
+
+                    }
+                );
+
+        }
+
+
+
+        /* =====================================================
+           SUMMARY CARD EVENTS
+        ===================================================== */
+
+        document.getElementById(
+            "totalRecordsCard"
+        )?.addEventListener(
+            "click",
+            function () {
+
+                openSummary(
+                    "All Health Records"
+                );
+
+            }
+        );
+
+
+        document.getElementById(
+            "medicalReportsCard"
+        )?.addEventListener(
+            "click",
+            function () {
+
+                openSummary(
+                    "Medical Reports",
+                    "Medical Report"
+                );
+
+            }
+        );
+
+
+        document.getElementById(
+            "prescriptionsCard"
+        )?.addEventListener(
+            "click",
+            function () {
+
+                openSummary(
+                    "Prescriptions",
+                    "Prescription"
+                );
+
+            }
+        );
+
+
+        document.getElementById(
+            "recentActivityCard"
+        )?.addEventListener(
+            "click",
+            function () {
+
+                openSummary(
+                    "Recent Activity",
+                    "all",
+                    true
+                );
+
+            }
+        );
+
+
+
+        /* =====================================================
+           CLOSE SUMMARY
+        ===================================================== */
+
+        function closeSummary() {
+
+            summaryViewer.hidden =
+                true;
+
+            document.body.classList.remove(
+                "modal-open"
+            );
+
+        }
+
+
+        document.getElementById(
+            "closeSummaryViewer"
+        )?.addEventListener(
+            "click",
+            closeSummary
+        );
+
+
+        document.getElementById(
+            "summaryViewerOverlay"
+        )?.addEventListener(
+            "click",
+            closeSummary
+        );
+
+
+
+        /* =====================================================
+           EDIT RECORD
+        ===================================================== */
+
+        document.querySelectorAll(
+            ".edit-record"
+        ).forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const id =
+                            this.dataset.recordId;
+
+
+                        const record =
+                            document.querySelector(
+                                `.health-record-card[data-record-id="${id}"]`
+                            );
+
+
+                        if (!record) {
+                            return;
+                        }
+
+
+                        /*
+                         * Fill form with existing data.
+                         */
+
+                        document.getElementById(
+                            "recordTitle"
+                        ).value =
+                            record.dataset.recordTitle || "";
+
+
+                        document.getElementById(
+                            "recordType"
+                        ).value =
+                            record.dataset.recordType || "";
+
+
+                        /*
+                         * Date in the database is
+                         * displayed as "d M Y".
+                         *
+                         * The edit date field needs
+                         * YYYY-MM-DD.
+                         *
+                         * We therefore leave it
+                         * unchanged here until the
+                         * backend edit step.
+                         */
+
+
+                        document.getElementById(
+                            "doctorName"
+                        ).value =
+                            record.dataset.recordDoctor || "";
+
+
+                        document.getElementById(
+                            "hospitalName"
+                        ).value =
+                            record.dataset.recordHospital || "";
+
+
+                        document.getElementById(
+                            "diagnosis"
+                        ).value =
+                            record.dataset.recordDiagnosis || "";
+
+
+                        document.getElementById(
+                            "recordDescription"
+                        ).value =
+                            record.dataset.recordDescription || "";
+
+
+                        document.getElementById(
+                            "recordNotes"
+                        ).value =
+                            record.dataset.recordNotes || "";
+
+
+                        document.getElementById(
+                            "recordModalTitle"
+                        ).textContent =
+                            "Edit Health Record";
+
+
+                        /*
+                         * This URL will be connected
+                         * when the edit Django view
+                         * is added.
+                         */
+
+                        form.action =
+                            `/health-records/${id}/edit/`;
+
+
+                        saveButton.innerHTML =
+                            `
+                            <i class="fa-solid fa-pen"></i>
+                            Update Record
+                            `;
+
+
+                        modal.hidden =
+                            false;
+
+
+                        document.body.classList.add(
+                            "modal-open"
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+/* =====================================================
+   DELETE HEALTH RECORD
+===================================================== */
+
+document.querySelectorAll(
+    ".delete-record"
+).forEach(
+    function (button) {
+
+        button.addEventListener(
+            "click",
+            async function () {
+
+                const recordId =
+                    this.dataset.recordId;
+
+                if (!recordId) {
+                    return;
+                }
+
+
+                const confirmed =
+                    window.confirm(
+                        "Are you sure you want to delete this health record?"
+                    );
+
+
+                if (!confirmed) {
+                    return;
+                }
+
+
+                const csrfToken =
+                    document.querySelector(
+                        "[name=csrfmiddlewaretoken]"
+                    )?.value;
+
+
+                if (!csrfToken) {
+
+                    alert(
+                        "Security token missing. Please refresh the page and try again."
+                    );
+
+                    return;
+                }
+
+
+                const deleteButton = this;
+
+
+                deleteButton.disabled = true;
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `/health-records/${recordId}/delete/`,
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "X-CSRFToken":
+                                        csrfToken,
+
+                                    "X-Requested-With":
+                                        "XMLHttpRequest"
+                                },
+
+                                credentials: "same-origin"
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (!response.ok || !data.success) {
+
+                        throw new Error(
+                            data.message ||
+                            "Unable to delete the health record."
+                        );
+
+                    }
+
+
+                    /*
+                     * Remove the card from the page
+                     */
+
+                    const recordCard =
+                        document.querySelector(
+                            `.health-record-card[data-record-id="${recordId}"]`
+                        );
+
+
+                    if (recordCard) {
+
+                        recordCard.remove();
+
+                    }
+
+
+                    /*
+                     * Update summary numbers
+                     */
+
+                    const remainingRecords =
+                        document.querySelectorAll(
+                            ".health-record-card"
+                        );
+
+
+                    const totalRecordsElement =
+                        document.getElementById(
+                            "totalRecords"
+                        );
+
+
+                    const recentActivityElement =
+                        document.getElementById(
+                            "recentActivity"
+                        );
+
+
+                    const medicalReportsElement =
+                        document.getElementById(
+                            "medicalReports"
+                        );
+
+
+                    const prescriptionsElement =
+                        document.getElementById(
+                            "prescriptions"
+                        );
+
+
+                    if (totalRecordsElement) {
+
+                        totalRecordsElement.textContent =
+                            remainingRecords.length;
+
+                    }
+
+
+                    if (recentActivityElement) {
+
+                        recentActivityElement.textContent =
+                            remainingRecords.length;
+
+                    }
+
+
+                    if (medicalReportsElement) {
+
+                        let count = 0;
+
+                        remainingRecords.forEach(
+                            function (record) {
+
+                                if (
+                                    record.dataset.recordType ===
+                                    "Medical Report"
+                                ) {
+                                    count++;
+                                }
+
+                            }
+                        );
+
+
+                        medicalReportsElement.textContent =
+                            count;
+
+                    }
+
+
+                    if (prescriptionsElement) {
+
+                        let count = 0;
+
+                        remainingRecords.forEach(
+                            function (record) {
+
+                                if (
+                                    record.dataset.recordType ===
+                                    "Prescription"
+                                ) {
+                                    count++;
+                                }
+
+                            }
+                        );
+
+
+                        prescriptionsElement.textContent =
+                            count;
+
+                    }
+
+
+                    /*
+                     * Show empty state if
+                     * there are no records left.
+                     */
+
+                    const recordsEmptyState =
+                        document.getElementById(
+                            "recordsEmptyState"
+                        );
+
+
+                    if (
+                        recordsEmptyState &&
+                        remainingRecords.length === 0
+                    ) {
+
+                        recordsEmptyState.hidden =
+                            false;
+
+                    }
+
+
+                    /*
+                     * Success message
+                     */
+
+                    alert(
+                        "Health record deleted successfully."
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Delete error:",
+                        error
+                    );
+
+
+                    alert(
+                        error.message ||
+                        "Something went wrong while deleting the record."
+                    );
+
+
+                    deleteButton.disabled =
+                        false;
+
+                }
+
+            }
+        );
+
+    }
+);
+
+        /* =====================================================
+           ESC KEY
+        ===================================================== */
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key !== "Escape"
+                ) {
+                    return;
+                }
+
+
+                if (
+                    modal &&
+                    !modal.hidden
+                ) {
+
+                    closeModal();
+
+                    return;
+
+                }
+
+
+                if (
+                    recordViewer &&
+                    !recordViewer.hidden
+                ) {
+
+                    closeRecordViewer();
+
+                    return;
+
+                }
+
+
+                if (
+                    summaryViewer &&
+                    !summaryViewer.hidden
+                ) {
+
+                    closeSummary();
+
+                }
+
+            }
+        );
+
+
+
+        /* =====================================================
+           INITIAL FILTER
+        ===================================================== */
+
+        filterRecords();
+
+    }
+);
+
+</script>
+
+{% endblock %}

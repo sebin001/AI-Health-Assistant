@@ -1,0 +1,201 @@
+{% extends "assist/base.html" %}
+
+{% block title %}
+User Activity | AI Health Assistant
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/user_activity.css">
+{% endblock %}
+
+{% block content %}
+
+<section class="activity-page">
+
+    <div class="activity-header">
+        <div>
+            <span class="activity-label">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                ACTIVITY CENTER
+            </span>
+
+            <h1>User Activity</h1>
+
+            <p>
+                View your recent health and account activities in one place.
+            </p>
+        </div>
+    </div>
+
+
+    <!-- Activity Summary -->
+<div class="activity-summary">
+
+    <div class="activity-summary-card">
+        <div class="activity-summary-icon">
+            <i class="fa-solid fa-layer-group"></i>
+        </div>
+
+        <div>
+            <span>Total Activities</span>
+            <strong>{{ activities|length }}</strong>
+        </div>
+    </div>
+
+
+    <div class="activity-summary-card">
+        <div class="activity-summary-icon">
+            <i class="fa-solid fa-heart-pulse"></i>
+        </div>
+
+        <div>
+            <span>Health Records</span>
+            <strong>{{ health_count }}</strong>
+        </div>
+    </div>
+
+
+    <div class="activity-summary-card">
+        <div class="activity-summary-icon">
+            <i class="fa-solid fa-pills"></i>
+        </div>
+
+        <div>
+            <span>Medicine Actions</span>
+            <strong>{{ medicine_count }}</strong>
+        </div>
+    </div>
+
+
+    <div class="activity-summary-card">
+        <div class="activity-summary-icon">
+            <i class="fa-solid fa-calendar-check"></i>
+        </div>
+
+        <div>
+            <span>Appointments</span>
+            <strong>{{ appointment_count }}</strong>
+        </div>
+    </div>
+
+</div>
+
+    <!-- Activity Timeline -->
+
+    <div class="activity-panel">
+
+        <div class="activity-panel-header">
+
+            <div>
+                <h2>
+                    <i class="fa-solid fa-list-check"></i>
+                    Activity History
+                </h2>
+
+                <p>
+                    Your latest account and health-related activities.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="activity-list">
+
+            {% for activity in activities %}
+
+                <div class="activity-item">
+
+                    <div class="activity-icon">
+
+                        {% if activity.activity_type == "health_record_added" %}
+                            <i class="fa-solid fa-file-medical"></i>
+
+                        {% elif activity.activity_type == "health_record_updated" %}
+                            <i class="fa-solid fa-file-pen"></i>
+
+                        {% elif activity.activity_type == "health_record_deleted" %}
+                            <i class="fa-solid fa-file-circle-xmark"></i>
+
+                        {% elif activity.activity_type == "medicine_added" %}
+                            <i class="fa-solid fa-pills"></i>
+
+                        {% elif activity.activity_type == "medicine_updated" %}
+                            <i class="fa-solid fa-pen-to-square"></i>
+
+                        {% elif activity.activity_type == "medicine_deleted" %}
+                            <i class="fa-solid fa-trash"></i>
+
+                        {% elif activity.activity_type == "appointment_booked" %}
+                            <i class="fa-solid fa-calendar-check"></i>
+
+                        {% elif activity.activity_type == "appointment_cancelled" %}
+                            <i class="fa-solid fa-calendar-xmark"></i>
+
+                        {% elif activity.activity_type == "ai_chat" %}
+                            <i class="fa-solid fa-robot"></i>
+
+                        {% elif activity.activity_type == "profile_updated" %}
+                            <i class="fa-solid fa-user-pen"></i>
+
+                        {% else %}
+                            <i class="fa-solid fa-circle-info"></i>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="activity-info">
+
+                        <div class="activity-title-row">
+
+                            <h3>
+                                {{ activity.title }}
+                            </h3>
+
+                            <span class="activity-status">
+                                {{ activity.get_activity_type_display }}
+                            </span>
+
+                        </div>
+
+                        <p>
+                            {{ activity.description }}
+                        </p>
+
+                        <small>
+                            <i class="fa-regular fa-clock"></i>
+
+                            {{ activity.created_at|date:"d M Y, h:i A" }}
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <div class="activity-empty">
+
+                    <div class="activity-empty-icon">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+
+                    <h3>No activities yet</h3>
+
+                    <p>
+                        Your health and account activities will appear here.
+                    </p>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

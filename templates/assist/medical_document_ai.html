@@ -1,0 +1,698 @@
+{% extends "assist/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .medical-ai-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px 60px;
+    }
+
+    .medical-ai-header {
+        margin-bottom: 28px;
+    }
+
+    .medical-ai-header h1 {
+        margin: 0 0 8px;
+        font-size: 32px;
+        font-weight: 800;
+        color: #eafcff;
+    }
+
+    .medical-ai-header p {
+        margin: 0;
+        color: #94aeb8;
+        line-height: 1.6;
+    }
+
+    .upload-card {
+        position: relative;
+        overflow: hidden;
+        padding: 34px;
+        border: 1px solid rgba(73, 209, 194, 0.18);
+        border-radius: 24px;
+        background:
+            linear-gradient(
+                145deg,
+                rgba(18, 35, 42, 0.96),
+                rgba(10, 23, 30, 0.96)
+            );
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    .upload-zone {
+        min-height: 260px;
+        border: 2px dashed rgba(73, 209, 194, 0.38);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 30px;
+        cursor: pointer;
+        transition: 0.25s ease;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+        border-color: #49d1c2;
+        background: rgba(73, 209, 194, 0.06);
+        transform: translateY(-2px);
+    }
+
+    .upload-icon {
+        width: 76px;
+        height: 76px;
+        margin: 0 auto 18px;
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(73, 209, 194, 0.12);
+        color: #49d1c2;
+        font-size: 32px;
+    }
+
+    .upload-zone h2 {
+        margin: 0 0 8px;
+        color: #f0ffff;
+        font-size: 21px;
+    }
+
+    .upload-zone p {
+        margin: 0 0 8px;
+        color: #8fa7b0;
+    }
+
+    .supported-files {
+        font-size: 13px;
+        color: #6f8a94;
+    }
+
+    .selected-file {
+        display: none;
+        margin-top: 20px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: rgba(73, 209, 194, 0.08);
+        border: 1px solid rgba(73, 209, 194, 0.18);
+        color: #dffaf7;
+    }
+
+    .selected-file strong {
+        color: #49d1c2;
+    }
+
+    .analyze-button {
+        width: 100%;
+        margin-top: 20px;
+        min-height: 52px;
+        border: 0;
+        border-radius: 14px;
+        background: linear-gradient(135deg, #49d1c2, #25a99d);
+        color: #06211f;
+        font-size: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: 0.25s ease;
+    }
+
+    .analyze-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(73, 209, 194, 0.22);
+    }
+
+    .analyze-button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .status-message {
+        display: none;
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 14px;
+        font-size: 14px;
+    }
+
+    .status-message.error {
+        display: block;
+        background: rgba(239, 68, 68, 0.10);
+        border: 1px solid rgba(239, 68, 68, 0.22);
+        color: #ffb4b4;
+    }
+
+    .status-message.loading {
+        display: block;
+        background: rgba(73, 209, 194, 0.08);
+        border: 1px solid rgba(73, 209, 194, 0.18);
+        color: #bceee9;
+    }
+
+    .results {
+        display: none;
+        margin-top: 30px;
+    }
+
+    .results.visible {
+        display: block;
+    }
+
+    .result-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+
+    .result-card {
+        padding: 22px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        background: rgba(15, 30, 37, 0.92);
+    }
+
+    .result-card h3 {
+        margin: 0 0 16px;
+        color: #efffff;
+        font-size: 17px;
+    }
+
+    .result-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 14px;
+        background: rgba(73, 209, 194, 0.10);
+        color: #49d1c2;
+    }
+
+    .info-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        color: #91a9b1;
+        font-size: 14px;
+    }
+
+    .info-row strong {
+        color: #e5f8f7;
+        text-align: right;
+    }
+
+    .risk-result {
+        padding: 14px;
+        border-radius: 14px;
+        background: rgba(73, 209, 194, 0.06);
+        color: #c9eeeb;
+        line-height: 1.6;
+    }
+
+    .risk-result.high {
+        background: rgba(239, 68, 68, 0.08);
+        color: #ffbebe;
+    }
+
+    .missing-result {
+        margin-top: 12px;
+        padding: 14px;
+        border-radius: 14px;
+        background: rgba(245, 158, 11, 0.08);
+        color: #ffd59a;
+        line-height: 1.6;
+        font-size: 14px;
+    }
+
+    .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .tag {
+        padding: 8px 11px;
+        border-radius: 999px;
+        background: rgba(73, 209, 194, 0.09);
+        border: 1px solid rgba(73, 209, 194, 0.15);
+        color: #bceee9;
+        font-size: 13px;
+    }
+
+    .empty-text {
+        color: #718991;
+        font-size: 14px;
+    }
+
+    .disclaimer {
+        margin-top: 22px;
+        padding: 16px 18px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        color: #8ea5ad;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 900px) {
+        .result-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 620px) {
+        .medical-ai-page {
+            padding: 25px 14px 45px;
+        }
+
+        .upload-card {
+            padding: 18px;
+        }
+
+        .result-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .medical-ai-header h1 {
+            font-size: 27px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="medical-ai-page">
+
+    <div class="medical-ai-header">
+        <h1>
+            <i class="fa-solid fa-file-medical"></i>
+            Medical Document AI
+        </h1>
+        <p>
+            Upload a medical document and let the assistant extract
+            documented health information and available risk assessments.
+        </p>
+    </div>
+
+    <section class="upload-card">
+
+        <form id="medicalDocumentForm">
+            {% csrf_token %}
+
+            <input
+                type="file"
+                id="medicalDocument"
+                name="document"
+                accept=".pdf,.docx,.txt"
+                hidden
+            >
+
+            <div
+                class="upload-zone"
+                id="uploadZone"
+                role="button"
+                tabindex="0"
+            >
+                <div>
+                    <div class="upload-icon">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+
+                    <h2>Upload Medical Document</h2>
+
+                    <p>
+                        Click here or drag and drop your report
+                    </p>
+
+                    <div class="supported-files">
+                        PDF · DOCX · TXT
+                    </div>
+                </div>
+            </div>
+
+            <div class="selected-file" id="selectedFile"></div>
+
+            <button
+                type="submit"
+                class="analyze-button"
+                id="analyzeButton"
+                disabled
+            >
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                Analyze Medical Document
+            </button>
+
+            <div
+                class="status-message"
+                id="statusMessage"
+                aria-live="polite"
+            ></div>
+        </form>
+    </section>
+
+    <section class="results" id="results">
+
+        <div class="result-grid">
+
+            <div class="result-card">
+                <div class="result-icon">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <h3>Patient Information</h3>
+
+                <div class="info-list" id="patientInformation"></div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-icon">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+
+                <h3>Blood Pressure</h3>
+
+                <div id="bloodPressureResult"></div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-icon">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+
+                <h3>Diabetes Risk</h3>
+
+                <div id="diabetesResult"></div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-icon">
+                    <i class="fa-solid fa-shield-heart"></i>
+                </div>
+
+                <h3>General Health Risk</h3>
+
+                <div id="healthRiskResult"></div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-icon">
+                    <i class="fa-solid fa-notes-medical"></i>
+                </div>
+
+                <h3>Documented Conditions</h3>
+
+                <div id="diagnosesResult"></div>
+            </div>
+
+            <div class="result-card">
+                <div class="result-icon">
+                    <i class="fa-solid fa-pills"></i>
+                </div>
+
+                <h3>Documented Medicines</h3>
+
+                <div id="medicinesResult"></div>
+            </div>
+
+        </div>
+
+        <div class="disclaimer">
+            <i class="fa-solid fa-circle-info"></i>
+            This assessment summarizes information extracted from the
+            uploaded document and available ML-based risk assessments.
+            It is not a medical diagnosis and should not replace advice
+            from a qualified healthcare professional.
+        </div>
+
+    </section>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const form = document.getElementById("medicalDocumentForm");
+    const fileInput = document.getElementById("medicalDocument");
+    const uploadZone = document.getElementById("uploadZone");
+    const selectedFile = document.getElementById("selectedFile");
+    const analyzeButton = document.getElementById("analyzeButton");
+    const statusMessage = document.getElementById("statusMessage");
+    const results = document.getElementById("results");
+
+    function showStatus(message, type) {
+        statusMessage.textContent = message;
+        statusMessage.className = "status-message " + type;
+    }
+
+    function clearStatus() {
+        statusMessage.textContent = "";
+        statusMessage.className = "status-message";
+    }
+
+    function updateSelectedFile() {
+        const file = fileInput.files[0];
+
+        if (!file) {
+            selectedFile.style.display = "none";
+            analyzeButton.disabled = true;
+            return;
+        }
+
+        selectedFile.innerHTML =
+            '<i class="fa-solid fa-file-lines"></i> ' +
+            '<strong>Selected:</strong> ' +
+            file.name;
+
+        selectedFile.style.display = "block";
+        analyzeButton.disabled = false;
+        clearStatus();
+    }
+
+    uploadZone.addEventListener("click", function () {
+        fileInput.click();
+    });
+
+    uploadZone.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            fileInput.click();
+        }
+    });
+
+    fileInput.addEventListener("change", updateSelectedFile);
+
+    uploadZone.addEventListener("dragover", function (event) {
+        event.preventDefault();
+        uploadZone.classList.add("dragover");
+    });
+
+    uploadZone.addEventListener("dragleave", function () {
+        uploadZone.classList.remove("dragover");
+    });
+
+    uploadZone.addEventListener("drop", function (event) {
+        event.preventDefault();
+        uploadZone.classList.remove("dragover");
+
+        if (event.dataTransfer.files.length) {
+            fileInput.files = event.dataTransfer.files;
+            updateSelectedFile();
+        }
+    });
+
+    function renderList(container, items, emptyMessage) {
+        if (!items || !items.length) {
+            container.innerHTML =
+                '<div class="empty-text">' +
+                emptyMessage +
+                "</div>";
+            return;
+        }
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "tag-list";
+
+        items.forEach(function (item) {
+            const tag = document.createElement("span");
+            tag.className = "tag";
+            tag.textContent = item;
+            wrapper.appendChild(tag);
+        });
+
+        container.innerHTML = "";
+        container.appendChild(wrapper);
+    }
+
+    function renderAssessment(data) {
+        const medicalInfo = data.medical_information;
+        const assessment = data.assessment;
+
+        document.getElementById("patientInformation").innerHTML = `
+            <div class="info-row">
+                <span>Age</span>
+                <strong>${medicalInfo.age ?? "Not found"}</strong>
+            </div>
+            <div class="info-row">
+                <span>Blood Glucose</span>
+                <strong>${medicalInfo.blood_glucose ?? "Not found"}</strong>
+            </div>
+            <div class="info-row">
+                <span>Heart Rate</span>
+                <strong>${medicalInfo.heart_rate ?? "Not found"}</strong>
+            </div>
+        `;
+
+        const bp = assessment.blood_pressure;
+
+        if (bp && bp.category) {
+            const highClass =
+                bp.level === "high" || bp.level === "severe"
+                    ? "high"
+                    : "";
+
+            document.getElementById("bloodPressureResult").innerHTML = `
+                <div class="risk-result ${highClass}">
+                    <strong>${bp.category}</strong>
+                    <br>
+                    ${bp.systolic}/${bp.diastolic} mmHg
+                    <br>
+                    ${bp.message}
+                </div>
+            `;
+        }
+
+        const diabetes = assessment.diabetes;
+
+        if (diabetes.success) {
+            document.getElementById("diabetesResult").innerHTML = `
+                <div class="risk-result">
+                    <strong>${diabetes.result.risk_level}</strong>
+                </div>
+            `;
+        } else {
+            document.getElementById("diabetesResult").innerHTML = `
+                <div class="missing-result">
+                    ${diabetes.message}
+                    <br><br>
+                    <strong>Missing:</strong>
+                    ${diabetes.missing_fields.join(", ")}
+                </div>
+            `;
+        }
+
+        const healthRisk = assessment.general_health_risk;
+
+        if (healthRisk.success) {
+            document.getElementById("healthRiskResult").innerHTML = `
+                <div class="risk-result">
+                    <strong>${healthRisk.result.risk_level}</strong>
+                </div>
+            `;
+        } else {
+            document.getElementById("healthRiskResult").innerHTML = `
+                <div class="missing-result">
+                    ${healthRisk.message}
+                    <br><br>
+                    <strong>Missing:</strong>
+                    ${healthRisk.missing_fields.join(", ")}
+                </div>
+            `;
+        }
+
+        renderList(
+            document.getElementById("diagnosesResult"),
+            assessment.documented_diagnoses,
+            "No diagnoses were explicitly documented."
+        );
+
+        renderList(
+            document.getElementById("medicinesResult"),
+            assessment.documented_medicines,
+            "No medicines were explicitly documented."
+        );
+
+        results.classList.add("visible");
+    }
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const file = fileInput.files[0];
+
+        if (!file) {
+            showStatus(
+                "Please select a medical document first.",
+                "error"
+            );
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("document", file);
+
+        const csrfToken = document.querySelector(
+            "[name=csrfmiddlewaretoken]"
+        ).value;
+
+        analyzeButton.disabled = true;
+
+        showStatus(
+            "Analyzing your medical document...",
+            "loading"
+        );
+
+        try {
+            const response = await fetch(
+                "{% url 'medical_document_assessment_api' %}",
+                {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                    },
+                    body: formData,
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(
+                    data.message ||
+                    "Unable to analyze the document."
+                );
+            }
+
+            renderAssessment(data);
+
+            showStatus(
+                "Medical document analyzed successfully.",
+                "loading"
+            );
+
+        } catch (error) {
+            results.classList.remove("visible");
+
+            showStatus(
+                error.message ||
+                "Something went wrong while analyzing the document.",
+                "error"
+            );
+
+        } finally {
+            analyzeButton.disabled = false;
+        }
+    });
+})();
+</script>
+{% endblock %}

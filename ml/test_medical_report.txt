@@ -1,0 +1,17 @@
+Patient Medical Report
+
+Patient Name: Test Patient
+Age: 35
+
+Blood Pressure: 140/90 mmHg
+Blood Glucose: 140 mg/dL
+
+Diagnosis:
+Type 2 diabetes mellitus
+Hypertension
+
+Medicines:
+Metformin 500 mg
+Amlodipine 5 mg
+
+Heart Rate: 78 bpm

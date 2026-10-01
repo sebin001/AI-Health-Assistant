@@ -1,0 +1,1367 @@
+{% extends "assist/base.html" %}
+
+{% block title %}Edit Medicine | AI Health Assistant{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.edit-medicine-page {
+    min-height: calc(100vh - 80px);
+    position: relative;
+    overflow: hidden;
+    padding: 55px 20px 80px;
+
+    background:
+        radial-gradient(
+            circle at 8% 12%,
+            rgba(20, 184, 166, 0.18),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 92% 18%,
+            rgba(14, 165, 233, 0.17),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 50% 100%,
+            rgba(45, 212, 191, 0.12),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #f8fbfd 0%,
+            #edf8f7 50%,
+            #f3f9fc 100%
+        );
+}
+
+
+/* =========================================================
+   MEDICAL GRID
+========================================================= */
+
+.medical-grid {
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        linear-gradient(
+            rgba(15, 118, 110, 0.035) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(15, 118, 110, 0.035) 1px,
+            transparent 1px
+        );
+
+    background-size: 45px 45px;
+
+    mask-image: linear-gradient(
+        to bottom,
+        black,
+        transparent 90%
+    );
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   AURORA LIGHTS
+========================================================= */
+
+.aurora {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(10px);
+    pointer-events: none;
+    opacity: 0.55;
+}
+
+.aurora-one {
+    width: 320px;
+    height: 320px;
+
+    top: -130px;
+    left: -90px;
+
+    background: rgba(20, 184, 166, 0.16);
+
+    animation:
+        auroraMoveOne 10s ease-in-out infinite alternate;
+}
+
+.aurora-two {
+    width: 360px;
+    height: 360px;
+
+    right: -130px;
+    top: 80px;
+
+    background: rgba(14, 165, 233, 0.13);
+
+    animation:
+        auroraMoveTwo 13s ease-in-out infinite alternate;
+}
+
+.aurora-three {
+    width: 300px;
+    height: 300px;
+
+    left: 40%;
+    bottom: -190px;
+
+    background: rgba(45, 212, 191, 0.14);
+
+    animation:
+        auroraMoveThree 12s ease-in-out infinite alternate;
+}
+
+@keyframes auroraMoveOne {
+
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+
+    to {
+        transform: translate(80px, 60px) scale(1.18);
+    }
+}
+
+@keyframes auroraMoveTwo {
+
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+
+    to {
+        transform: translate(-70px, 50px) scale(1.15);
+    }
+}
+
+@keyframes auroraMoveThree {
+
+    from {
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        transform: translateY(-70px) scale(1.18);
+    }
+}
+
+
+/* =========================================================
+   FLOATING MEDICAL PARTICLES
+========================================================= */
+
+.medical-particle {
+    position: absolute;
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: rgba(20, 184, 166, 0.35);
+
+    box-shadow:
+        0 0 14px rgba(20, 184, 166, 0.25);
+
+    pointer-events: none;
+
+    animation:
+        particleFloat 7s ease-in-out infinite;
+}
+
+.particle-one {
+    left: 10%;
+    top: 25%;
+    animation-delay: 0s;
+}
+
+.particle-two {
+    left: 18%;
+    top: 72%;
+    animation-delay: 1.5s;
+}
+
+.particle-three {
+    right: 12%;
+    top: 35%;
+    animation-delay: 2s;
+}
+
+.particle-four {
+    right: 20%;
+    bottom: 15%;
+    animation-delay: 3s;
+}
+
+.particle-five {
+    left: 48%;
+    top: 15%;
+    animation-delay: 4s;
+}
+
+@keyframes particleFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.35;
+    }
+
+    50% {
+        transform: translateY(-25px);
+        opacity: 0.9;
+    }
+}
+
+
+/* =========================================================
+   FLOATING CAPSULES
+========================================================= */
+
+.floating-capsule {
+    position: absolute;
+
+    width: 70px;
+    height: 28px;
+
+    border-radius: 30px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(20, 184, 166, 0.12) 50%,
+            rgba(14, 165, 233, 0.10) 50%
+        );
+
+    border: 1px solid rgba(20, 184, 166, 0.10);
+
+    transform: rotate(-25deg);
+
+    opacity: 0.65;
+
+    pointer-events: none;
+
+    animation:
+        capsuleFloat 9s ease-in-out infinite;
+}
+
+.capsule-one {
+    top: 20%;
+    left: 4%;
+}
+
+.capsule-two {
+    top: 67%;
+    right: 5%;
+    transform: rotate(35deg);
+    animation-delay: 2s;
+}
+
+.capsule-three {
+    bottom: 10%;
+    left: 12%;
+    transform: rotate(18deg);
+    animation-delay: 4s;
+}
+
+.capsule-four {
+    top: 10%;
+    right: 15%;
+    transform: rotate(-40deg);
+    animation-delay: 5s;
+}
+
+@keyframes capsuleFloat {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            rotate(-25deg);
+    }
+
+    50% {
+        transform:
+            translateY(-22px)
+            rotate(-15deg);
+    }
+}
+
+
+/* =========================================================
+   MAIN WRAPPER
+========================================================= */
+
+.edit-wrapper {
+    position: relative;
+    z-index: 5;
+
+    width: min(850px, 100%);
+
+    margin: auto;
+
+    animation:
+        pageReveal 0.8s ease both;
+}
+
+@keyframes pageReveal {
+
+    from {
+        opacity: 0;
+        transform:
+            translateY(35px)
+            scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.edit-header {
+    text-align: center;
+
+    margin-bottom: 30px;
+}
+
+.edit-icon {
+    width: 82px;
+    height: 82px;
+
+    margin: auto auto 20px;
+
+    border-radius: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    font-size: 32px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #14b8a6,
+            #0ea5e9
+        );
+
+    box-shadow:
+        0 18px 40px rgba(15, 118, 110, 0.24);
+
+    position: relative;
+
+    animation:
+        iconFloat 4s ease-in-out infinite;
+}
+
+.edit-icon::before {
+    content: "";
+
+    position: absolute;
+
+    inset: -7px;
+
+    border-radius: 29px;
+
+    border: 1px solid rgba(20, 184, 166, 0.25);
+
+    animation:
+        iconRing 2.5s ease-out infinite;
+}
+
+@keyframes iconFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-7px);
+    }
+}
+
+@keyframes iconRing {
+
+    0% {
+        transform: scale(0.92);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1.18);
+        opacity: 0;
+    }
+}
+
+.edit-header h1 {
+    margin: 0;
+
+    font-size: clamp(28px, 4vw, 40px);
+
+    font-weight: 800;
+
+    color: #0f172a;
+
+    letter-spacing: -0.8px;
+}
+
+.edit-header p {
+    margin: 10px auto 0;
+
+    max-width: 570px;
+
+    color: #64748b;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   FORM CARD
+========================================================= */
+
+.edit-card {
+    position: relative;
+
+    background:
+        rgba(255, 255, 255, 0.86);
+
+    backdrop-filter: blur(20px);
+
+    -webkit-backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255, 255, 255, 0.85);
+
+    border-radius: 28px;
+
+    padding: 38px;
+
+    box-shadow:
+        0 25px 70px rgba(15, 23, 42, 0.10),
+        0 5px 20px rgba(20, 184, 166, 0.06);
+
+    overflow: hidden;
+
+    animation:
+        cardReveal 0.9s 0.15s ease both;
+}
+
+@keyframes cardReveal {
+
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* animated top line */
+
+.edit-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -100%;
+
+    width: 100%;
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #14b8a6,
+            #0ea5e9,
+            transparent
+        );
+
+    animation:
+        cardLine 4s linear infinite;
+}
+
+@keyframes cardLine {
+
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+
+/* =========================================================
+   FORM GRID
+========================================================= */
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 22px;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #334155;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+.form-label i {
+    color: #0f9f93;
+
+    margin-right: 6px;
+}
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.edit-card input,
+.edit-card select,
+.edit-card textarea {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    border: 1px solid #dbe5e9;
+
+    background: rgba(248, 250, 252, 0.9);
+
+    border-radius: 14px;
+
+    padding: 13px 15px;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    color: #0f172a;
+
+    outline: none;
+
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+.edit-card textarea {
+    min-height: 110px;
+
+    resize: vertical;
+}
+
+.edit-card input:hover,
+.edit-card select:hover,
+.edit-card textarea:hover {
+    border-color: #9bd8d1;
+
+    background: white;
+}
+
+.edit-card input:focus,
+.edit-card select:focus,
+.edit-card textarea:focus {
+
+    border-color: #14b8a6;
+
+    background: white;
+
+    box-shadow:
+        0 0 0 4px rgba(20, 184, 166, 0.10),
+        0 8px 20px rgba(20, 184, 166, 0.06);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   CHECKBOX
+========================================================= */
+
+.checkbox-group {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 15px 17px;
+
+    border-radius: 14px;
+
+    background: rgba(240, 253, 250, 0.75);
+
+    border: 1px solid #d7efeb;
+
+    transition: 0.25s ease;
+}
+
+.checkbox-group:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(20, 184, 166, 0.08);
+}
+
+.checkbox-group input {
+    width: 18px !important;
+    height: 18px;
+
+    accent-color: #14b8a6;
+
+    transform: none !important;
+
+    box-shadow: none !important;
+}
+
+.checkbox-text strong {
+    display: block;
+
+    color: #334155;
+
+    font-size: 14px;
+}
+
+.checkbox-text span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   ERRORS
+========================================================= */
+
+.field-error {
+    margin-top: 7px;
+
+    color: #dc2626;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+.non-field-error {
+    margin-bottom: 20px;
+
+    padding: 12px 15px;
+
+    border-radius: 12px;
+
+    background: #fef2f2;
+
+    border: 1px solid #fecaca;
+
+    color: #b91c1c;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   BUTTON AREA
+========================================================= */
+
+.form-actions {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-top: 32px;
+
+    padding-top: 25px;
+
+    border-top: 1px solid #e8eef1;
+}
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.back-button {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 13px 20px;
+
+    border-radius: 13px;
+
+    color: #475569;
+
+    background: #f1f5f9;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    transition: 0.25s ease;
+}
+
+.back-button:hover {
+
+    background: #e2e8f0;
+
+    color: #0f172a;
+
+    transform: translateX(-3px);
+}
+
+
+/* =========================================================
+   SAVE BUTTON
+========================================================= */
+
+.save-button {
+
+    position: relative;
+
+    overflow: hidden;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 9px;
+
+    border: none;
+
+    cursor: pointer;
+
+    padding: 14px 25px;
+
+    border-radius: 14px;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #14b8a6,
+            #0ea5e9
+        );
+
+    box-shadow:
+        0 12px 25px rgba(20, 184, 166, 0.25);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.save-button::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: -100%;
+
+    width: 70%;
+
+    height: 100%;
+
+    background:
+        linear-gradient(
+            100deg,
+            transparent,
+            rgba(255,255,255,0.35),
+            transparent
+        );
+
+    transform: skewX(-20deg);
+
+    transition: 0.6s ease;
+}
+
+.save-button:hover::before {
+    left: 140%;
+}
+
+.save-button:hover {
+
+    transform:
+        translateY(-3px)
+        scale(1.02);
+
+    box-shadow:
+        0 18px 35px rgba(20, 184, 166, 0.30);
+}
+
+.save-button:active {
+
+    transform:
+        translateY(0)
+        scale(0.98);
+}
+
+
+/* =========================================================
+   MEDICINE INFO
+========================================================= */
+
+.current-medicine {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    margin-bottom: 28px;
+
+    padding: 14px 17px;
+
+    border-radius: 15px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(240,253,250,0.9),
+            rgba(239,246,255,0.8)
+        );
+
+    border: 1px solid #dcefeb;
+}
+
+.current-medicine-icon {
+
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #14b8a6,
+            #0ea5e9
+        );
+
+    box-shadow:
+        0 7px 16px rgba(20, 184, 166, 0.20);
+}
+
+.current-medicine-text strong {
+
+    display: block;
+
+    color: #0f172a;
+
+    font-size: 14px;
+}
+
+.current-medicine-text span {
+
+    display: block;
+
+    margin-top: 3px;
+
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .edit-medicine-page {
+        padding: 40px 15px 60px;
+    }
+
+    .edit-card {
+        padding: 25px 20px;
+
+        border-radius: 22px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full {
+        grid-column: auto;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+
+        align-items: stretch;
+    }
+
+    .back-button,
+    .save-button {
+        width: 100%;
+
+        justify-content: center;
+
+        box-sizing: border-box;
+    }
+
+    .floating-capsule {
+        opacity: 0.3;
+    }
+
+    .edit-icon {
+        width: 70px;
+        height: 70px;
+
+        font-size: 27px;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+
+        animation-duration: 0.01ms !important;
+
+        animation-iteration-count: 1 !important;
+
+        transition-duration: 0.01ms !important;
+    }
+}
+
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="edit-medicine-page">
+
+    <!-- BACKGROUND -->
+    <div class="medical-grid"></div>
+
+    <div class="aurora aurora-one"></div>
+    <div class="aurora aurora-two"></div>
+    <div class="aurora aurora-three"></div>
+
+    <div class="floating-capsule capsule-one"></div>
+    <div class="floating-capsule capsule-two"></div>
+    <div class="floating-capsule capsule-three"></div>
+    <div class="floating-capsule capsule-four"></div>
+
+    <span class="medical-particle particle-one"></span>
+    <span class="medical-particle particle-two"></span>
+    <span class="medical-particle particle-three"></span>
+    <span class="medical-particle particle-four"></span>
+    <span class="medical-particle particle-five"></span>
+
+
+    <!-- MAIN -->
+    <div class="edit-wrapper">
+
+        <!-- HEADER -->
+        <div class="edit-header">
+
+            <div class="edit-icon">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+
+            <h1>
+                Edit Medicine
+            </h1>
+
+            <p>
+                Update your medicine information and reminder
+                settings to keep your health routine organized.
+            </p>
+
+        </div>
+
+
+        <!-- FORM CARD -->
+        <div class="edit-card">
+
+            <!-- CURRENT MEDICINE -->
+            <div class="current-medicine">
+
+                <div class="current-medicine-icon">
+                    <i class="fa-solid fa-pills"></i>
+                </div>
+
+                <div class="current-medicine-text">
+
+                    <strong>
+                        Editing Medicine Reminder
+                    </strong>
+
+                    <span>
+                        {{ medicine.medicine_name }}
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- FORM -->
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                {% if form.non_field_errors %}
+
+                    <div class="non-field-error">
+
+                        {{ form.non_field_errors }}
+
+                    </div>
+
+                {% endif %}
+
+
+                <div class="form-grid">
+
+
+                    <!-- MEDICINE NAME -->
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            <i class="fa-solid fa-capsules"></i>
+
+                            Medicine Name
+
+                        </label>
+
+                        {{ form.medicine_name }}
+
+                        {% for error in form.medicine_name.errors %}
+
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- DOSAGE -->
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            <i class="fa-solid fa-prescription-bottle-medical"></i>
+
+                            Dosage
+
+                        </label>
+
+                        {{ form.dosage }}
+
+                        {% for error in form.dosage.errors %}
+
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- FREQUENCY -->
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            <i class="fa-solid fa-repeat"></i>
+
+                            Frequency
+
+                        </label>
+
+                        {{ form.frequency }}
+
+                        {% for error in form.frequency.errors %}
+
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- REMINDER TIME -->
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            <i class="fa-solid fa-clock"></i>
+
+                            Reminder Time
+
+                        </label>
+
+                        {{ form.reminder_time }}
+
+                        {% for error in form.reminder_time.errors %}
+
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- START DATE -->
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            <i class="fa-solid fa-calendar-plus"></i>
+
+                            Start Date
+
+                        </label>
+
+                        {{ form.start_date }}
+
+                        {% for error in form.start_date.errors %}
+
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- END DATE -->
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            <i class="fa-solid fa-calendar-check"></i>
+
+                            End Date
+
+                        </label>
+
+                        {{ form.end_date }}
+
+                        {% for error in form.end_date.errors %}
+
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- NOTES -->
+                    <div class="form-group full">
+
+                        <label class="form-label">
+
+                            <i class="fa-solid fa-note-sticky"></i>
+
+                            Notes
+
+                        </label>
+
+                        {{ form.notes }}
+
+                        {% for error in form.notes.errors %}
+
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- EMAIL REMINDER -->
+                    <div class="form-group full">
+
+                        <label class="form-label">
+
+                            <i class="fa-solid fa-envelope"></i>
+
+                            Reminder Notification
+
+                        </label>
+
+                        <div class="checkbox-group">
+
+                            {{ form.email_reminder }}
+
+                            <div class="checkbox-text">
+
+                                <strong>
+                                    Email Reminder
+                                </strong>
+
+                                <span>
+                                    Receive an email notification
+                                    for this medicine reminder.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        {% for error in form.email_reminder.errors %}
+
+                            <div class="field-error">
+                                {{ error }}
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- ACTIONS -->
+                <div class="form-actions">
+
+                    <a
+                        href="{% url 'medicine_list' %}"
+                        class="back-button"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+
+                        Back to My Medicines
+                    </a>
+
+
+                    <button
+                        type="submit"
+                        class="save-button"
+                    >
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        Update Medicine
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

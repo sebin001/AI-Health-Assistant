@@ -1,0 +1,2094 @@
+{% extends "assist/base.html" %}
+{% load static %}
+
+{% block title %}
+AI Health Assistant
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/assistant.css' %}"
+>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+>
+
+{% endblock %}
+
+
+
+{% block content %}
+
+<div class="health-ai-app">
+
+    <!-- =====================================================
+         TOP HEADER
+         ===================================================== -->
+
+    <header class="health-ai-header">
+
+        <div class="health-ai-brand">
+
+            <div class="health-ai-logo">
+                <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+
+            <div class="health-ai-brand-info">
+
+                <div class="health-ai-title-row">
+
+                    <h1>
+                        AI Health Assistant
+                    </h1>
+
+                    <span class="health-ai-badge">
+                        AI
+                    </span>
+
+                </div>
+
+                <div class="health-ai-online">
+
+                    <span class="health-ai-online-dot"></span>
+
+                    <span>
+                        Online
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="clearChatBtn"
+            class="health-ai-clear-btn"
+            title="Clear conversation"
+        >
+
+            <i class="fa-solid fa-trash-can"></i>
+
+            <span>
+                Clear
+            </span>
+
+        </button>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         CHAT AREA
+         ===================================================== -->
+
+    <main
+        class="health-ai-chat"
+        id="chatArea"
+    >
+
+        {% if chat_history %}
+
+            {% for message in chat_history %}
+
+                {% if message.role == "user" %}
+
+                <!-- ================= USER ================= -->
+
+                <article class="health-ai-message user-message">
+
+                    <div class="health-ai-message-inner">
+
+                        <div class="health-ai-avatar user-avatar">
+
+                            {% if user.profile.profile_picture %}
+
+                                <img
+                                    src="{{ user.profile.profile_picture.url }}"
+                                    alt="{{ user.username }}"
+                                >
+
+                            {% else %}
+
+                                <span>
+                                    {{ user.username|first|upper }}
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="health-ai-message-body">
+
+                            <div class="health-ai-message-name">
+                                {{ user.username }}
+                            </div>
+
+                            <div class="health-ai-user-text">
+                                {{ message.content|linebreaksbr }}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                {% else %}
+
+                <!-- ================= AI ================= -->
+
+                <article class="health-ai-message assistant-message">
+
+                    <div class="health-ai-message-inner">
+
+                        <div class="health-ai-avatar assistant-avatar">
+
+                            <i class="fa-solid fa-heart-pulse"></i>
+
+                        </div>
+
+
+                        <div class="health-ai-message-body">
+
+                            <div class="health-ai-message-name assistant-name">
+
+                                <span>
+                                    AI Health Assistant
+                                </span>
+
+                                <span class="assistant-status-label">
+                                    AI
+                                </span>
+
+                            </div>
+
+
+                            <div
+                                class="health-ai-response"
+                                data-response="{{ message.content|escape }}"
+                            ></div>
+
+
+                            <div class="health-ai-actions">
+
+                                <button
+                                    type="button"
+                                    class="health-ai-action copy-answer"
+                                >
+
+                                    <i class="fa-regular fa-copy"></i>
+
+                                    <span>
+                                        Copy
+                                    </span>
+
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    class="health-ai-action regenerate-answer"
+                                >
+
+                                    <i class="fa-solid fa-rotate"></i>
+
+                                    <span>
+                                        Regenerate
+                                    </span>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+                {% endif %}
+
+            {% endfor %}
+
+
+        {% else %}
+
+        <!-- =================================================
+             WELCOME SCREEN
+             ================================================= -->
+
+        <section
+            class="health-ai-welcome"
+            id="emptyState"
+        >
+
+            <div class="health-ai-welcome-logo">
+
+                <div class="health-ai-welcome-logo-inner">
+
+                    <i class="fa-solid fa-heart-pulse"></i>
+
+                </div>
+
+            </div>
+
+
+            <h2>
+                How can I help you today?
+            </h2>
+
+
+            <p>
+                Ask me about health information, medicines,
+                symptoms, sleep, nutrition, wellness,
+                or general health topics.
+            </p>
+
+
+            <div class="health-ai-suggestions">
+
+                <button
+                    type="button"
+                    class="health-ai-suggestion"
+                    data-message="How can I improve my sleep?"
+                >
+
+                    <span class="suggestion-icon">
+                        <i class="fa-solid fa-moon"></i>
+                    </span>
+
+                    <span>
+                        Improve my sleep
+                    </span>
+
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="health-ai-suggestion"
+                    data-message="What are some healthy habits I can follow every day?"
+                >
+
+                    <span class="suggestion-icon">
+                        <i class="fa-solid fa-heart"></i>
+                    </span>
+
+                    <span>
+                        Healthy daily habits
+                    </span>
+
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="health-ai-suggestion"
+                    data-message="How can I stay properly hydrated throughout the day?"
+                >
+
+                    <span class="suggestion-icon">
+                        <i class="fa-solid fa-droplet"></i>
+                    </span>
+
+                    <span>
+                        Staying hydrated
+                    </span>
+
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="health-ai-suggestion"
+                    data-message="What should I know about taking medicines safely?"
+                >
+
+                    <span class="suggestion-icon">
+                        <i class="fa-solid fa-pills"></i>
+                    </span>
+
+                    <span>
+                        Medicine safety
+                    </span>
+
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+
+                </button>
+
+            </div>
+
+        </section>
+
+        {% endif %}
+
+
+
+        <!-- =================================================
+             TYPING INDICATOR
+             ================================================= -->
+
+        <article
+            class="health-ai-message assistant-message"
+            id="typingMessage"
+            style="display:none;"
+        >
+
+            <div class="health-ai-message-inner">
+
+                <div class="health-ai-avatar assistant-avatar">
+
+                    <i class="fa-solid fa-heart-pulse"></i>
+
+                </div>
+
+
+                <div class="health-ai-message-body">
+
+                    <div class="health-ai-message-name assistant-name">
+
+                        AI Health Assistant
+
+                    </div>
+
+
+                    <div class="health-ai-typing">
+
+                        <span></span>
+                        <span></span>
+                        <span></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </article>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         INPUT AREA
+         ===================================================== -->
+
+    <footer class="health-ai-input-area">
+
+        <!-- VOICE STATUS -->
+
+        <div
+            class="health-ai-voice-status"
+            id="voiceStatus"
+        >
+
+            <div class="voice-status-icon">
+                <i class="fa-solid fa-microphone"></i>
+            </div>
+
+            <span id="voiceStatusText">
+                Listening...
+            </span>
+
+            <div class="voice-wave">
+
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </div>
+
+        </div>
+
+
+        <!-- INPUT -->
+
+        <form
+            id="chatForm"
+            autocomplete="off"
+        >
+
+            {% csrf_token %}
+
+            <div class="health-ai-input-box">
+
+                <textarea
+                    id="messageInput"
+                    rows="1"
+                    maxlength="4000"
+                    placeholder="Message AI Health Assistant..."
+                    aria-label="Message AI Health Assistant"
+                ></textarea>
+
+
+                <button
+                    type="button"
+                    id="voiceBtn"
+                    class="health-ai-input-btn voice-btn"
+                    title="Voice input"
+                    aria-label="Voice input"
+                >
+
+                    <i class="fa-solid fa-microphone"></i>
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    id="sendBtn"
+                    class="health-ai-send-btn"
+                    title="Send message"
+                    aria-label="Send message"
+                >
+
+                    <i class="fa-solid fa-arrow-up"></i>
+
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <div class="health-ai-disclaimer">
+
+            <span>
+
+                <i class="fa-solid fa-shield-heart"></i>
+
+                AI-generated health information
+
+            </span>
+
+            <span>
+                Not a substitute for professional medical care
+            </span>
+
+        </div>
+
+    </footer>
+
+</div>
+
+{% endblock %}
+
+
+
+{% block extra_js %}
+
+<script>
+
+(function () {
+
+    "use strict";
+
+
+    /* =====================================================
+       ELEMENTS
+       ===================================================== */
+
+    const chatArea =
+        document.getElementById("chatArea");
+
+    const chatForm =
+        document.getElementById("chatForm");
+
+    const messageInput =
+        document.getElementById("messageInput");
+
+    const sendBtn =
+        document.getElementById("sendBtn");
+
+    const voiceBtn =
+        document.getElementById("voiceBtn");
+
+    const clearChatBtn =
+        document.getElementById("clearChatBtn");
+
+    const typingMessage =
+        document.getElementById("typingMessage");
+
+    const emptyState =
+        document.getElementById("emptyState");
+
+    const voiceStatus =
+        document.getElementById("voiceStatus");
+
+    const voiceStatusText =
+        document.getElementById("voiceStatusText");
+
+
+    /* =====================================================
+       CSRF
+       ===================================================== */
+
+    const csrfInput =
+        document.querySelector(
+            "[name=csrfmiddlewaretoken]"
+        );
+
+    const csrfToken =
+        csrfInput
+            ? csrfInput.value
+            : "";
+
+
+    /* =====================================================
+       USER DATA
+       ===================================================== */
+
+    const currentUser = {
+
+        username:
+            "{{ user.username|escapejs }}",
+
+        profilePicture:
+            "{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url|escapejs }}{% endif %}"
+
+    };
+
+
+    /* =====================================================
+       SCROLL
+       ===================================================== */
+
+    function scrollToBottom() {
+
+        requestAnimationFrame(function () {
+
+            chatArea.scrollTop =
+                chatArea.scrollHeight;
+
+        });
+
+    }
+
+
+    /* =====================================================
+       TEXTAREA
+       ===================================================== */
+
+    function resizeTextarea() {
+
+        messageInput.style.height =
+            "auto";
+
+        const height =
+            Math.min(
+                messageInput.scrollHeight,
+                160
+            );
+
+        messageInput.style.height =
+            height + "px";
+
+    }
+
+
+    messageInput.addEventListener(
+        "input",
+        resizeTextarea
+    );
+
+
+    /* =====================================================
+       HTML ESCAPE
+       ===================================================== */
+
+    function escapeHTML(text) {
+
+        const element =
+            document.createElement("div");
+
+        element.textContent =
+            text;
+
+        return element.innerHTML;
+
+    }
+
+
+    /* =====================================================
+       MARKDOWN RENDERER
+       ===================================================== */
+
+    function renderAIResponse(source) {
+
+        if (!source) {
+
+            return "";
+
+        }
+
+
+        let text =
+            String(source)
+                .replace(/\r\n/g, "\n")
+                .replace(/\r/g, "\n");
+
+
+        /*
+         * Escape user/provider content first.
+         */
+
+        text =
+            escapeHTML(text);
+
+
+        /*
+         * CODE BLOCKS
+         */
+
+        const codeBlocks = [];
+
+
+        text =
+            text.replace(
+                /```(?:[a-zA-Z0-9_+-]+)?\n?([\s\S]*?)```/g,
+                function (_, code) {
+
+                    const index =
+                        codeBlocks.length;
+
+                    codeBlocks.push(
+                        code.trim()
+                    );
+
+                    return (
+                        "___CODE_BLOCK_" +
+                        index +
+                        "___"
+                    );
+
+                }
+            );
+
+
+        /*
+         * INLINE CODE
+         */
+
+        text =
+            text.replace(
+                /`([^`\n]+)`/g,
+                "<code>$1</code>"
+            );
+
+
+        /*
+         * HEADINGS
+         */
+
+        text =
+            text.replace(
+                /^###\s+(.+)$/gm,
+                "<h3>$1</h3>"
+            );
+
+
+        text =
+            text.replace(
+                /^##\s+(.+)$/gm,
+                "<h2>$1</h2>"
+            );
+
+
+        text =
+            text.replace(
+                /^#\s+(.+)$/gm,
+                "<h1>$1</h1>"
+            );
+
+
+        /*
+         * HORIZONTAL LINE
+         */
+
+        text =
+            text.replace(
+                /^\s*---+\s*$/gm,
+                "<hr>"
+            );
+
+
+        /*
+         * BOLD
+         */
+
+        text =
+            text.replace(
+                /\*\*(.+?)\*\*/g,
+                "<strong>$1</strong>"
+            );
+
+
+        text =
+            text.replace(
+                /__(.+?)__/g,
+                "<strong>$1</strong>"
+            );
+
+
+        /*
+         * ITALIC
+         */
+
+        text =
+            text.replace(
+                /\*(?!\s)(.+?)(?<!\s)\*/g,
+                "<em>$1</em>"
+            );
+
+
+        /*
+         * Process lines.
+         */
+
+        const lines =
+            text.split("\n");
+
+
+        const result = [];
+
+        let inUL = false;
+        let inOL = false;
+
+
+        function closeLists() {
+
+            if (inUL) {
+
+                result.push("</ul>");
+
+                inUL =
+                    false;
+
+            }
+
+
+            if (inOL) {
+
+                result.push("</ol>");
+
+                inOL =
+                    false;
+
+            }
+
+        }
+
+
+        lines.forEach(function (line) {
+
+            const unordered =
+                line.match(
+                    /^\s*[-*•]\s+(.+)$/
+                );
+
+
+            const ordered =
+                line.match(
+                    /^\s*\d+[.)]\s+(.+)$/
+                );
+
+
+            if (unordered) {
+
+                if (inOL) {
+
+                    result.push("</ol>");
+
+                    inOL =
+                        false;
+
+                }
+
+
+                if (!inUL) {
+
+                    result.push("<ul>");
+
+                    inUL =
+                        true;
+
+                }
+
+
+                result.push(
+                    "<li>" +
+                    unordered[1] +
+                    "</li>"
+                );
+
+                return;
+
+            }
+
+
+            if (ordered) {
+
+                if (inUL) {
+
+                    result.push("</ul>");
+
+                    inUL =
+                        false;
+
+                }
+
+
+                if (!inOL) {
+
+                    result.push("<ol>");
+
+                    inOL =
+                        true;
+
+                }
+
+
+                result.push(
+                    "<li>" +
+                    ordered[1] +
+                    "</li>"
+                );
+
+                return;
+
+            }
+
+
+            closeLists();
+
+            result.push(line);
+
+        });
+
+
+        closeLists();
+
+
+        text =
+            result.join("\n");
+
+
+        /*
+         * Convert paragraphs.
+         */
+
+        const blocks =
+            text.split(/\n{2,}/);
+
+
+        let html = "";
+
+
+        blocks.forEach(function (block) {
+
+            const clean =
+                block.trim();
+
+
+            if (!clean) {
+
+                return;
+
+            }
+
+
+            if (
+                clean.startsWith("<h1>") ||
+                clean.startsWith("<h2>") ||
+                clean.startsWith("<h3>") ||
+                clean.startsWith("<ul>") ||
+                clean.startsWith("<ol>") ||
+                clean === "<hr>"
+            ) {
+
+                html +=
+                    clean;
+
+            } else {
+
+                html +=
+                    "<p>" +
+                    clean.replace(
+                        /\n/g,
+                        "<br>"
+                    ) +
+                    "</p>";
+
+            }
+
+        });
+
+
+        /*
+         * Restore code blocks.
+         */
+
+        codeBlocks.forEach(
+            function (code, index) {
+
+                const codeHTML = `
+
+                    <div class="health-ai-code">
+
+                        <div class="health-ai-code-header">
+
+                            <span>
+                                Code
+                            </span>
+
+                            <button
+                                type="button"
+                                class="code-copy-btn"
+                            >
+
+                                <i class="fa-regular fa-copy"></i>
+
+                                Copy
+
+                            </button>
+
+                        </div>
+
+                        <pre><code>${escapeHTML(code)}</code></pre>
+
+                    </div>
+
+                `;
+
+
+                html =
+                    html.replace(
+                        "___CODE_BLOCK_" +
+                        index +
+                        "___",
+                        codeHTML
+                    );
+
+            }
+        );
+
+
+        return html;
+
+    }
+
+
+    /* =====================================================
+       DECODE STORED AI MESSAGE
+       ===================================================== */
+
+    function decodeAttribute(value) {
+
+        const textarea =
+            document.createElement(
+                "textarea"
+            );
+
+        textarea.innerHTML =
+            value || "";
+
+        return textarea.value;
+
+    }
+
+
+    /* =====================================================
+       RENDER EXISTING AI MESSAGES
+       ===================================================== */
+
+    function renderStoredMessages() {
+
+        document
+            .querySelectorAll(
+                ".health-ai-response"
+            )
+            .forEach(function (element) {
+
+                const raw =
+                    decodeAttribute(
+                        element.dataset.response
+                    );
+
+
+                element.innerHTML =
+                    renderAIResponse(raw);
+
+
+                attachMessageActions(
+                    element.closest(
+                        ".assistant-message"
+                    )
+                );
+
+            });
+
+    }
+
+
+    /* =====================================================
+       USER AVATAR
+       ===================================================== */
+
+    function getUserAvatar() {
+
+        if (
+            currentUser.profilePicture
+        ) {
+
+            return `
+
+                <img
+                    src="${escapeHTML(
+                        currentUser.profilePicture
+                    )}"
+                    alt="${escapeHTML(
+                        currentUser.username
+                    )}"
+                >
+
+            `;
+
+        }
+
+
+        return `
+
+            <span>
+                ${escapeHTML(
+                    currentUser.username
+                        .charAt(0)
+                        .toUpperCase()
+                )}
+            </span>
+
+        `;
+
+    }
+
+
+    /* =====================================================
+       ADD USER MESSAGE
+       ===================================================== */
+
+    function addUserMessage(message) {
+
+        if (emptyState) {
+
+            emptyState.remove();
+
+        }
+
+
+        const article =
+            document.createElement(
+                "article"
+            );
+
+
+        article.className =
+            "health-ai-message user-message";
+
+
+        article.innerHTML = `
+
+            <div class="health-ai-message-inner">
+
+                <div class="health-ai-avatar user-avatar">
+
+                    ${getUserAvatar()}
+
+                </div>
+
+
+                <div class="health-ai-message-body">
+
+                    <div class="health-ai-message-name">
+
+                        ${escapeHTML(
+                            currentUser.username
+                        )}
+
+                    </div>
+
+
+                    <div class="health-ai-user-text"></div>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        article
+            .querySelector(
+                ".health-ai-user-text"
+            )
+            .textContent =
+                message;
+
+
+        chatArea.insertBefore(
+            article,
+            typingMessage
+        );
+
+
+        scrollToBottom();
+
+    }
+
+
+    /* =====================================================
+       ADD AI MESSAGE
+       ===================================================== */
+
+    function addAIMessage(response) {
+
+        const article =
+            document.createElement(
+                "article"
+            );
+
+
+        article.className =
+            "health-ai-message assistant-message";
+
+
+        article.innerHTML = `
+
+            <div class="health-ai-message-inner">
+
+                <div class="health-ai-avatar assistant-avatar">
+
+                    <i class="fa-solid fa-heart-pulse"></i>
+
+                </div>
+
+
+                <div class="health-ai-message-body">
+
+                    <div class="health-ai-message-name assistant-name">
+
+                        <span>
+                            AI Health Assistant
+                        </span>
+
+                        <span class="assistant-status-label">
+                            AI
+                        </span>
+
+                    </div>
+
+
+                    <div class="health-ai-response"></div>
+
+
+                    <div class="health-ai-actions">
+
+                        <button
+                            type="button"
+                            class="health-ai-action copy-answer"
+                        >
+
+                            <i class="fa-regular fa-copy"></i>
+
+                            <span>
+                                Copy
+                            </span>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            class="health-ai-action regenerate-answer"
+                        >
+
+                            <i class="fa-solid fa-rotate"></i>
+
+                            <span>
+                                Regenerate
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        const responseElement =
+            article.querySelector(
+                ".health-ai-response"
+            );
+
+
+        responseElement.innerHTML =
+            renderAIResponse(response);
+
+
+        chatArea.insertBefore(
+            article,
+            typingMessage
+        );
+
+
+        attachMessageActions(
+            article
+        );
+
+
+        scrollToBottom();
+
+    }
+
+
+    /* =====================================================
+       MESSAGE ACTIONS
+       ===================================================== */
+
+    function attachMessageActions(
+        article
+    ) {
+
+        if (!article) {
+
+            return;
+
+        }
+
+
+        /*
+         * COPY ANSWER
+         */
+
+        const copyBtn =
+            article.querySelector(
+                ".copy-answer"
+            );
+
+
+        if (copyBtn) {
+
+            copyBtn.addEventListener(
+                "click",
+                function () {
+
+                    const response =
+                        article.querySelector(
+                            ".health-ai-response"
+                        );
+
+
+                    if (!response) {
+
+                        return;
+
+                    }
+
+
+                    copyToClipboard(
+                        response.innerText,
+                        copyBtn
+                    );
+
+                }
+            );
+
+        }
+
+
+        /*
+         * CODE COPY
+         */
+
+        article
+            .querySelectorAll(
+                ".code-copy-btn"
+            )
+            .forEach(function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const codeBox =
+                            button.closest(
+                                ".health-ai-code"
+                            );
+
+
+                        const code =
+                            codeBox
+                                .querySelector(
+                                    "pre"
+                                )
+                                .innerText;
+
+
+                        copyToClipboard(
+                            code,
+                            button
+                        );
+
+                    }
+                );
+
+            });
+
+
+        /*
+         * REGENERATE
+         */
+
+        const regenerateBtn =
+            article.querySelector(
+                ".regenerate-answer"
+            );
+
+
+        if (regenerateBtn) {
+
+            regenerateBtn.addEventListener(
+                "click",
+                function () {
+
+                    let previous =
+                        article.previousElementSibling;
+
+
+                    while (
+                        previous &&
+                        !previous.classList.contains(
+                            "user-message"
+                        )
+                    ) {
+
+                        previous =
+                            previous.previousElementSibling;
+
+                    }
+
+
+                    if (!previous) {
+
+                        return;
+
+                    }
+
+
+                    const userText =
+                        previous.querySelector(
+                            ".health-ai-user-text"
+                        );
+
+
+                    if (!userText) {
+
+                        return;
+
+                    }
+
+
+                    sendMessage(
+                        userText.innerText,
+                        true
+                    );
+
+                }
+            );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       COPY FUNCTION
+       ===================================================== */
+
+    function copyToClipboard(
+        text,
+        button
+    ) {
+
+        const originalHTML =
+            button.innerHTML;
+
+
+        function copied() {
+
+            button.classList.add(
+                "copied"
+            );
+
+
+            button.innerHTML = `
+
+                <i class="fa-solid fa-check"></i>
+
+                <span>
+                    Copied
+                </span>
+
+            `;
+
+
+            setTimeout(
+                function () {
+
+                    button.classList.remove(
+                        "copied"
+                    );
+
+                    button.innerHTML =
+                        originalHTML;
+
+                },
+                1800
+            );
+
+        }
+
+
+        if (
+            navigator.clipboard &&
+            window.isSecureContext
+        ) {
+
+            navigator.clipboard
+                .writeText(text)
+                .then(copied)
+                .catch(function () {
+
+                    fallbackCopy(
+                        text,
+                        copied
+                    );
+
+                });
+
+        } else {
+
+            fallbackCopy(
+                text,
+                copied
+            );
+
+        }
+
+    }
+
+
+    function fallbackCopy(
+        text,
+        callback
+    ) {
+
+        const textarea =
+            document.createElement(
+                "textarea"
+            );
+
+
+        textarea.value =
+            text;
+
+
+        textarea.style.position =
+            "fixed";
+
+        textarea.style.left =
+            "-9999px";
+
+
+        document.body.appendChild(
+            textarea
+        );
+
+
+        textarea.focus();
+
+        textarea.select();
+
+
+        try {
+
+            document.execCommand(
+                "copy"
+            );
+
+            callback();
+
+        } catch (error) {
+
+            console.error(
+                "Copy failed:",
+                error
+            );
+
+        }
+
+
+        textarea.remove();
+
+    }
+
+
+    /* =====================================================
+       TYPING
+       ===================================================== */
+
+    function showTyping() {
+
+        typingMessage.style.display =
+            "block";
+
+        scrollToBottom();
+
+    }
+
+
+    function hideTyping() {
+
+        typingMessage.style.display =
+            "none";
+
+    }
+
+
+    /* =====================================================
+       SEND MESSAGE
+       ===================================================== */
+
+    async function sendMessage(
+        message,
+        regeneration = false
+    ) {
+
+        if (!message) {
+
+            return;
+
+        }
+
+
+        sendBtn.disabled =
+            true;
+
+        voiceBtn.disabled =
+            true;
+
+
+        if (!regeneration) {
+
+            addUserMessage(
+                message
+            );
+
+        }
+
+
+        showTyping();
+
+
+        const formData =
+            new FormData();
+
+
+        formData.append(
+            "message",
+            message
+        );
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "{% url 'ai_chat_api' %}",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "X-CSRFToken":
+                                csrfToken,
+
+                            "X-Requested-With":
+                                "XMLHttpRequest"
+
+                        },
+
+                        body:
+                            formData
+
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            hideTyping();
+
+
+            if (
+                data.success &&
+                data.response
+            ) {
+
+                addAIMessage(
+                    data.response
+                );
+
+            } else {
+
+                addAIMessage(
+                    data.message ||
+                    "I couldn't generate a response right now. Please try again."
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "AI chat error:",
+                error
+            );
+
+
+            hideTyping();
+
+
+            addAIMessage(
+                "The AI service is temporarily unavailable. Please try again."
+            );
+
+        } finally {
+
+            sendBtn.disabled =
+                false;
+
+            voiceBtn.disabled =
+                false;
+
+            messageInput.focus();
+
+        }
+
+    }
+
+
+    /* =====================================================
+       FORM
+       ===================================================== */
+
+    chatForm.addEventListener(
+        "submit",
+        function (event) {
+
+            event.preventDefault();
+
+
+            const message =
+                messageInput.value.trim();
+
+
+            if (!message) {
+
+                return;
+
+            }
+
+
+            messageInput.value =
+                "";
+
+            resizeTextarea();
+
+
+            sendMessage(
+                message
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       ENTER
+       ===================================================== */
+
+    messageInput.addEventListener(
+        "keydown",
+        function (event) {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                chatForm.requestSubmit();
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       QUICK SUGGESTIONS
+       ===================================================== */
+
+    document
+        .querySelectorAll(
+            ".health-ai-suggestion"
+        )
+        .forEach(function (button) {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    messageInput.value =
+                        button.dataset.message;
+
+                    resizeTextarea();
+
+                    messageInput.focus();
+
+                }
+            );
+
+        });
+
+
+    /* =====================================================
+       CLEAR CHAT
+       ===================================================== */
+
+    clearChatBtn.addEventListener(
+        "click",
+        async function () {
+
+            const confirmed =
+                window.confirm(
+                    "Clear the entire conversation?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "{% url 'ai_clear_chat' %}",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "X-CSRFToken":
+                                    csrfToken,
+
+                                "X-Requested-With":
+                                    "XMLHttpRequest"
+
+                            }
+
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                if (data.success) {
+
+                    window.location.reload();
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Clear chat error:",
+                    error
+                );
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       VOICE INPUT
+       ===================================================== */
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    let recognition = null;
+
+    let isListening = false;
+
+    let finalTranscript = "";
+
+
+    if (SpeechRecognition) {
+
+        recognition =
+            new SpeechRecognition();
+
+
+        recognition.continuous =
+            true;
+
+        recognition.interimResults =
+            true;
+
+        recognition.lang =
+            "en-IN";
+
+
+        recognition.onstart =
+            function () {
+
+                isListening =
+                    true;
+
+
+                finalTranscript =
+                    messageInput.value;
+
+
+                voiceBtn.classList.add(
+                    "recording"
+                );
+
+
+                voiceStatus.classList.add(
+                    "active"
+                );
+
+
+                voiceStatusText.textContent =
+                    "Listening...";
+
+            };
+
+
+        recognition.onresult =
+            function (event) {
+
+                let interimTranscript =
+                    "";
+
+
+                for (
+                    let i =
+                        event.resultIndex;
+
+                    i <
+                        event.results.length;
+
+                    i++
+                ) {
+
+                    const transcript =
+                        event.results[i][0]
+                            .transcript;
+
+
+                    if (
+                        event.results[i]
+                            .isFinal
+                    ) {
+
+                        finalTranscript +=
+                            transcript;
+
+                    } else {
+
+                        interimTranscript +=
+                            transcript;
+
+                    }
+
+                }
+
+
+                /*
+                 * IMPORTANT:
+                 *
+                 * Speech transcript is placed
+                 * directly into the input.
+                 *
+                 * Gemini does NOT modify it.
+                 */
+
+                messageInput.value =
+                    finalTranscript +
+                    interimTranscript;
+
+
+                resizeTextarea();
+
+            };
+
+
+        recognition.onerror =
+            function (event) {
+
+                console.error(
+                    "Speech recognition error:",
+                    event.error
+                );
+
+
+                voiceStatusText.textContent =
+                    "Voice input error";
+
+            };
+
+
+        recognition.onend =
+            function () {
+
+                isListening =
+                    false;
+
+
+                voiceBtn.classList.remove(
+                    "recording"
+                );
+
+
+                voiceStatus.classList.remove(
+                    "active"
+                );
+
+
+                voiceStatusText.textContent =
+                    "Voice input ready";
+
+
+                resizeTextarea();
+
+            };
+
+
+        voiceBtn.addEventListener(
+            "click",
+            function () {
+
+                if (isListening) {
+
+                    recognition.stop();
+
+                    return;
+
+                }
+
+
+                finalTranscript =
+                    messageInput.value;
+
+
+                try {
+
+                    recognition.start();
+
+                } catch (error) {
+
+                    console.error(
+                        "Could not start voice:",
+                        error
+                    );
+
+                }
+
+            }
+        );
+
+
+    } else {
+
+        voiceBtn.disabled =
+            true;
+
+
+        voiceBtn.title =
+            "Voice input is not supported in this browser";
+
+    }
+
+
+    /* =====================================================
+       INITIALIZATION
+       ===================================================== */
+
+    renderStoredMessages();
+
+    resizeTextarea();
+
+    scrollToBottom();
+
+    messageInput.focus();
+
+
+})();
+
+</script>
+
+{% endblock %}

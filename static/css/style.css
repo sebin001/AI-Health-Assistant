@@ -1,0 +1,2308 @@
+/* =========================================================
+   AI HEALTH ASSISTANT
+   GLOBAL PROFESSIONAL DESIGN
+   ========================================================= */
+
+
+/* =========================================================
+   GOOGLE FONT
+   ========================================================= */
+
+@import url(
+    'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap'
+);
+
+
+/* =========================================================
+   ROOT VARIABLES
+   ========================================================= */
+
+:root {
+
+    --primary: #0F766E;
+
+    --primary-light: #14B8A6;
+
+    --secondary: #0891B2;
+
+    --navy: #0F172A;
+
+    --text: #334155;
+
+    --muted: #64748B;
+
+    --background: #F8FAFC;
+
+    --white: #FFFFFF;
+
+    --border: #E2E8F0;
+
+    --success: #16A34A;
+
+    --danger: #DC2626;
+
+    --shadow:
+        0 20px 50px rgba(15, 23, 42, 0.08);
+
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+* {
+
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+
+}
+
+
+html {
+
+    scroll-behavior: smooth;
+
+}
+
+
+body {
+
+    font-family:
+        "Inter",
+        sans-serif;
+
+    background:
+        var(--background);
+
+    color:
+        var(--text);
+
+    min-height: 100vh;
+
+}
+
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+a {
+
+    color: inherit;
+
+}
+
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.navbar {
+
+    width: 100%;
+
+    height: 76px;
+
+    padding:
+        0 7%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    background:
+        rgba(255, 255, 255, 0.94);
+
+    backdrop-filter:
+        blur(15px);
+
+    -webkit-backdrop-filter:
+        blur(15px);
+
+    border-bottom:
+        1px solid rgba(
+            226,
+            232,
+            240,
+            0.75
+        );
+
+    position: sticky;
+
+    top: 0;
+
+    z-index: 1000;
+
+}
+
+
+/* =========================================================
+   NAVBAR LOGO
+   ========================================================= */
+
+.logo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    color:
+        var(--navy);
+
+    font-size: 19px;
+
+    font-weight: 800;
+
+    letter-spacing:
+        -0.4px;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   AI HEALTH ASSISTANT LOGO ICON
+   ========================================================= */
+
+.logo-icon {
+
+    width: 48px;
+
+    height: 48px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    color:
+        #FFFFFF;
+
+    border-radius:
+        14px;
+
+    font-size:
+        21px;
+
+    line-height: 1;
+
+    box-shadow:
+        0 9px 22px
+        rgba(
+            15,
+            118,
+            110,
+            0.25
+        );
+
+    animation:
+        logoPulse
+        3s
+        ease-in-out
+        infinite;
+
+    transition:
+        transform
+        0.3s
+        ease,
+
+        box-shadow
+        0.3s
+        ease;
+
+}
+
+
+/* Heart-pulse icon itself */
+
+.logo-icon i {
+
+    display: block;
+
+    color:
+        #FFFFFF;
+
+    font-size:
+        21px;
+
+    line-height: 1;
+
+}
+
+
+/* Logo hover */
+
+.logo:hover .logo-icon {
+
+    transform:
+        translateY(-2px)
+        scale(1.04);
+
+    box-shadow:
+        0 13px 28px
+        rgba(
+            15,
+            118,
+            110,
+            0.30
+        );
+
+}
+
+
+/* =========================================================
+   NAVIGATION LINKS
+   ========================================================= */
+
+.nav-links {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 30px;
+
+}
+
+
+.nav-links a {
+
+    position: relative;
+
+    color:
+        var(--muted);
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    padding:
+        8px 0;
+
+    transition:
+        color
+        0.3s
+        ease;
+
+}
+
+
+.nav-links a::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+
+    bottom: -3px;
+
+    width: 0;
+
+    height: 2px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    transition:
+        width
+        0.3s
+        ease;
+
+}
+
+
+.nav-links a:hover {
+
+    color:
+        var(--primary);
+
+}
+
+
+.nav-links a:hover::after {
+
+    width: 100%;
+
+}
+
+
+/* =========================================================
+   MAIN PAGE CONTAINER
+   ========================================================= */
+
+.page-container {
+
+    min-height:
+        calc(
+            100vh - 136px
+        );
+
+}
+
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero {
+
+    position: relative;
+
+    min-height: 620px;
+
+    padding:
+        80px 7%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 80px;
+
+    overflow: hidden;
+
+    background:
+
+        radial-gradient(
+            circle at 80% 40%,
+            rgba(
+                20,
+                184,
+                166,
+                0.10
+            ),
+            transparent 35%
+        ),
+
+        var(--background);
+
+}
+
+
+/* Hero decorative glow */
+
+.hero::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 280px;
+
+    height: 280px;
+
+    top: -140px;
+
+    right: 8%;
+
+    border-radius: 50%;
+
+    background:
+        rgba(
+            20,
+            184,
+            166,
+            0.06
+        );
+
+    animation:
+        heroGlow
+        8s
+        ease-in-out
+        infinite;
+
+    pointer-events: none;
+
+}
+
+
+.hero::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 220px;
+
+    height: 220px;
+
+    bottom: -110px;
+
+    left: 10%;
+
+    border-radius: 50%;
+
+    background:
+        rgba(
+            8,
+            145,
+            178,
+            0.05
+        );
+
+    animation:
+        heroGlow
+        10s
+        ease-in-out
+        infinite
+        reverse;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   HERO CONTENT
+   ========================================================= */
+
+.hero-content {
+
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 650px;
+
+    animation:
+        heroEnter
+        0.8s
+        ease
+        forwards;
+
+}
+
+
+.hero-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding:
+        9px 15px;
+
+    background:
+        rgba(
+            20,
+            184,
+            166,
+            0.10
+        );
+
+    color:
+        var(--primary);
+
+    border:
+        1px solid
+        rgba(
+            20,
+            184,
+            166,
+            0.15
+        );
+
+    border-radius:
+        50px;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing:
+        1.3px;
+
+    margin-bottom:
+        25px;
+
+}
+
+
+.hero-badge i {
+
+    font-size:
+        12px;
+
+}
+
+
+.hero h1 {
+
+    color:
+        var(--navy);
+
+    font-size:
+        clamp(
+            48px,
+            6vw,
+            76px
+        );
+
+    line-height:
+        1.02;
+
+    letter-spacing:
+        -3px;
+
+    margin-bottom:
+        25px;
+
+}
+
+
+.hero h1 span {
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    background-clip:
+        text;
+
+    -webkit-background-clip:
+        text;
+
+    -webkit-text-fill-color:
+        transparent;
+
+}
+
+
+.hero p {
+
+    max-width:
+        590px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        17px;
+
+    line-height:
+        1.8;
+
+    margin-bottom:
+        35px;
+
+}
+
+
+/* =========================================================
+   HERO BUTTONS
+   ========================================================= */
+
+.hero-buttons {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+
+}
+
+
+.btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-height:
+        50px;
+
+    padding:
+        0 24px;
+
+    border-radius:
+        12px;
+
+    text-decoration:
+        none;
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    transition:
+
+        transform
+        0.3s
+        ease,
+
+        box-shadow
+        0.3s
+        ease,
+
+        background
+        0.3s
+        ease,
+
+        border-color
+        0.3s
+        ease;
+
+}
+
+
+.btn-primary {
+
+    color:
+        white;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    box-shadow:
+        0 12px 25px
+        rgba(
+            15,
+            118,
+            110,
+            0.20
+        );
+
+}
+
+
+.btn-primary:hover {
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 18px 35px
+        rgba(
+            15,
+            118,
+            110,
+            0.28
+        );
+
+}
+
+
+.btn-secondary {
+
+    color:
+        var(--navy);
+
+    background:
+        white;
+
+    border:
+        1px solid
+        var(--border);
+
+}
+
+
+.btn-secondary:hover {
+
+    transform:
+        translateY(-4px);
+
+    border-color:
+        #CBD5E1;
+
+    box-shadow:
+        0 12px 25px
+        rgba(
+            15,
+            23,
+            42,
+            0.08
+        );
+
+}
+
+
+/* =========================================================
+   AI CARD
+   ========================================================= */
+
+.hero-card {
+
+    position: relative;
+
+    z-index: 2;
+
+    width: 360px;
+
+    padding:
+        40px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(
+                255,
+                255,
+                255,
+                0.98
+            ),
+            rgba(
+                248,
+                250,
+                252,
+                0.96
+            )
+        );
+
+    border:
+        1px solid
+        rgba(
+            226,
+            232,
+            240,
+            0.9
+        );
+
+    border-radius:
+        28px;
+
+    box-shadow:
+        var(--shadow);
+
+    animation:
+        floatingCard
+        5s
+        ease-in-out
+        infinite;
+
+    flex-shrink:
+        0;
+
+}
+
+
+.hero-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+
+    height: 180px;
+
+    top: -70px;
+
+    right: -70px;
+
+    background:
+        rgba(
+            20,
+            184,
+            166,
+            0.10
+        );
+
+    border-radius:
+        50%;
+
+    filter:
+        blur(5px);
+
+    pointer-events:
+        none;
+
+}
+
+
+/* =========================================================
+   CARD ICON
+   ========================================================= */
+
+.card-icon {
+
+    position: relative;
+
+    width: 70px;
+
+    height: 70px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            var(--secondary)
+        );
+
+    color:
+        white;
+
+    border-radius:
+        20px;
+
+    font-size:
+        32px;
+
+    line-height:
+        1;
+
+    margin-bottom:
+        25px;
+
+    box-shadow:
+        0 12px 25px
+        rgba(
+            8,
+            145,
+            178,
+            0.20
+        );
+
+}
+
+
+.card-icon i {
+
+    color:
+        white;
+
+    line-height:
+        1;
+
+}
+
+
+/* =========================================================
+   HERO CARD TEXT
+   ========================================================= */
+
+.hero-card h2 {
+
+    position:
+        relative;
+
+    color:
+        var(--navy);
+
+    font-size:
+        22px;
+
+    margin-bottom:
+        12px;
+
+}
+
+
+.hero-card p {
+
+    position:
+        relative;
+
+    color:
+        var(--muted);
+
+    font-size:
+        14px;
+
+    line-height:
+        1.7;
+
+}
+
+
+/* =========================================================
+   AI STATUS
+   ========================================================= */
+
+.status {
+
+    position:
+        relative;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    margin-top:
+        25px;
+
+    padding:
+        13px 15px;
+
+    background:
+        #F0FDFA;
+
+    border:
+        1px solid
+        #CCFBF1;
+
+    border-radius:
+        12px;
+
+    color:
+        var(--primary);
+
+    font-size:
+        13px;
+
+    font-weight:
+        700;
+
+}
+
+
+.status span {
+
+    width:
+        9px;
+
+    height:
+        9px;
+
+    margin-right:
+        9px;
+
+    background:
+        var(--success);
+
+    border-radius:
+        50%;
+
+    box-shadow:
+        0 0 0 5px
+        rgba(
+            22,
+            163,
+            74,
+            0.10
+        );
+
+    animation:
+        statusPulse
+        2s
+        infinite;
+
+}
+
+
+/* =========================================================
+   FEATURES
+   ========================================================= */
+
+.features {
+
+    padding:
+        20px 7% 80px;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            1fr
+        );
+
+    gap:
+        25px;
+
+}
+
+
+.feature-card {
+
+    padding:
+        32px;
+
+    background:
+        white;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        20px;
+
+    transition:
+
+        transform
+        0.35s
+        ease,
+
+        box-shadow
+        0.35s
+        ease,
+
+        border-color
+        0.35s
+        ease;
+
+}
+
+
+.feature-card:hover {
+
+    transform:
+        translateY(-8px);
+
+    border-color:
+        #CBD5E1;
+
+    box-shadow:
+        0 18px 40px
+        rgba(
+            15,
+            23,
+            42,
+            0.08
+        );
+
+}
+
+
+/* =========================================================
+   FEATURE ICON
+   ========================================================= */
+
+.feature-icon {
+
+    width:
+        52px;
+
+    height:
+        52px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    background:
+        #F0FDFA;
+
+    color:
+        var(--primary);
+
+    border-radius:
+        14px;
+
+    font-size:
+        22px;
+
+    margin-bottom:
+        20px;
+
+    transition:
+        transform
+        0.3s
+        ease,
+
+        background
+        0.3s
+        ease;
+
+}
+
+
+.feature-card:hover
+.feature-icon {
+
+    transform:
+        rotate(-5deg)
+        scale(1.08);
+
+    background:
+        #E6FFFA;
+
+}
+
+
+/* =========================================================
+   FEATURE TEXT
+   ========================================================= */
+
+.feature-card h3 {
+
+    color:
+        var(--navy);
+
+    font-size:
+        17px;
+
+    margin-bottom:
+        10px;
+
+}
+
+
+.feature-card p {
+
+    color:
+        var(--muted);
+
+    font-size:
+        14px;
+
+    line-height:
+        1.7;
+
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer {
+
+    min-height:
+        60px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    background:
+        white;
+
+    border-top:
+        1px solid
+        var(--border);
+
+    color:
+        var(--muted);
+
+    font-size:
+        12px;
+
+}
+
+
+/* =========================================================
+   GLOBAL ANIMATIONS
+   ========================================================= */
+
+@keyframes heroEnter {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(25px);
+
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+@keyframes floatingCard {
+
+    0%,
+    100% {
+
+        transform:
+            translateY(0);
+
+    }
+
+    50% {
+
+        transform:
+            translateY(-12px);
+
+    }
+
+}
+
+
+@keyframes logoPulse {
+
+    0%,
+    100% {
+
+        transform:
+            scale(1);
+
+    }
+
+    50% {
+
+        transform:
+            scale(1.04);
+
+    }
+
+}
+
+
+@keyframes statusPulse {
+
+    0% {
+
+        box-shadow:
+            0 0 0 0
+            rgba(
+                22,
+                163,
+                74,
+                0.25
+            );
+
+    }
+
+    70% {
+
+        box-shadow:
+            0 0 0 7px
+            rgba(
+                22,
+                163,
+                74,
+                0
+            );
+
+    }
+
+    100% {
+
+        box-shadow:
+            0 0 0 0
+            rgba(
+                22,
+                163,
+                74,
+                0
+            );
+
+    }
+
+}
+
+
+@keyframes heroGlow {
+
+    0%,
+    100% {
+
+        transform:
+            translate(
+                0,
+                0
+            );
+
+    }
+
+    50% {
+
+        transform:
+            translate(
+                18px,
+                14px
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET
+   ========================================================= */
+
+@media (max-width: 1000px) {
+
+    .navbar {
+
+        padding:
+            0 5%;
+
+    }
+
+
+    .hero {
+
+        gap:
+            45px;
+
+        padding:
+            70px 5%;
+
+    }
+
+
+    .hero h1 {
+
+        font-size:
+            clamp(
+                44px,
+                6vw,
+                64px
+            );
+
+    }
+
+
+    .hero-card {
+
+        width:
+            330px;
+
+    }
+
+
+    .features {
+
+        padding-left:
+            5%;
+
+        padding-right:
+            5%;
+
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MOBILE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .nav-links {
+
+        display:
+            none;
+
+    }
+
+
+    .hero {
+
+        flex-direction:
+            column;
+
+        text-align:
+            center;
+
+        padding-top:
+            60px;
+
+    }
+
+
+    .hero-content {
+
+        max-width:
+            700px;
+
+    }
+
+
+    .hero p {
+
+        margin-left:
+            auto;
+
+        margin-right:
+            auto;
+
+    }
+
+
+    .hero-buttons {
+
+        justify-content:
+            center;
+
+    }
+
+
+    .hero-card {
+
+        width:
+            min(
+                100%,
+                390px
+            );
+
+    }
+
+
+    .features {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 500px) {
+
+    .navbar {
+
+        height:
+            68px;
+
+        padding:
+            0 5%;
+
+    }
+
+
+    .logo {
+
+        font-size:
+            16px;
+
+        gap:
+            9px;
+
+    }
+
+
+    .logo-icon {
+
+        width:
+            42px;
+
+        height:
+            42px;
+
+        border-radius:
+            12px;
+
+        font-size:
+            18px;
+
+    }
+
+
+    .logo-icon i {
+
+        font-size:
+            18px;
+
+    }
+
+
+    .hero {
+
+        padding:
+            55px 5% 60px;
+
+    }
+
+
+    .hero h1 {
+
+        font-size:
+            44px;
+
+        letter-spacing:
+            -2px;
+
+    }
+
+
+    .hero p {
+
+        font-size:
+            15px;
+
+    }
+
+
+    .hero-buttons {
+
+        flex-direction:
+            column;
+
+        width:
+            100%;
+
+    }
+
+
+    .btn {
+
+        width:
+            100%;
+
+    }
+
+
+    .hero-card {
+
+        width:
+            100%;
+
+        padding:
+            30px;
+
+        border-radius:
+            22px;
+
+    }
+
+
+    .features {
+
+        padding:
+            20px 5% 60px;
+
+    }
+
+
+    .feature-card {
+
+        padding:
+            26px;
+
+    }
+
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+button,
+a,
+input,
+select,
+textarea {
+
+    -webkit-tap-highlight-color:
+        transparent;
+
+}
+
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+
+    outline:
+        3px solid
+        rgba(
+            20,
+            184,
+            166,
+            0.25
+        );
+
+    outline-offset:
+        3px;
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+
+        animation-duration:
+            0.01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        scroll-behavior:
+            auto !important;
+
+        transition-duration:
+            0.01ms !important;
+
+    }
+
+}
+/* =====================================================
+   PROFESSIONAL AI HEALTH ASSISTANT NAVBAR
+   ===================================================== */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    width: 100%;
+    min-height: 68px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 42px;
+
+    box-sizing: border-box;
+
+    background:
+        linear-gradient(
+            110deg,
+            #073b4c 0%,
+            #0b4f64 45%,
+            #073b4c 100%
+        );
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,0.08);
+
+    box-shadow:
+        0 8px 25px
+        rgba(2, 30, 45, 0.18);
+}
+
+
+/* =====================================================
+   LOGO
+   ===================================================== */
+
+.navbar-logo {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    color: white;
+
+    text-decoration: none;
+
+    flex-shrink: 0;
+}
+
+.logo-icon {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #14b8a6,
+            #22d3ee
+        );
+
+    color: white;
+
+    font-size: 22px;
+
+    box-shadow:
+        0 7px 18px
+        rgba(20,184,166,0.30);
+
+    animation:
+        logoPulse
+        3s
+        ease-in-out
+        infinite;
+}
+
+.logo-text {
+    display: flex;
+
+    flex-direction: column;
+
+    line-height: 1.1;
+}
+
+.logo-text strong {
+    color: white;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    letter-spacing: -0.3px;
+}
+
+.logo-text small {
+    margin-top: 4px;
+
+    color:
+        rgba(255,255,255,0.62);
+
+    font-size: 10px;
+
+    font-weight: 500;
+
+    letter-spacing: 0.2px;
+}
+
+
+@keyframes logoPulse {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-2px);
+    }
+
+}
+
+
+/* =====================================================
+   NAVIGATION LINKS
+   ===================================================== */
+
+.nav-links {
+    display: flex;
+
+    align-items: stretch;
+
+    height: 68px;
+
+    margin-left: auto;
+    margin-right: 28px;
+
+    gap: 4px;
+}
+
+.nav-item {
+    position: relative;
+
+    height: 68px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 0 17px;
+
+    color:
+        rgba(255,255,255,0.76);
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    transition:
+        color 0.3s ease,
+        background 0.3s ease;
+}
+
+
+/* Hover */
+
+.nav-item:hover {
+    color: white;
+
+    background:
+        rgba(255,255,255,0.06);
+}
+
+
+/* Icon */
+
+.nav-item i {
+    font-size: 15px;
+
+    color:
+        rgba(180,230,240,0.82);
+
+    transition:
+        0.3s;
+}
+
+.nav-item:hover i {
+    color:
+        #5eead4;
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* =====================================================
+   ACTIVE NAVIGATION
+   ===================================================== */
+
+.nav-item.active {
+    color: white;
+}
+
+.nav-item.active i {
+    color:
+        #5eead4;
+}
+
+
+/* Active underline */
+
+.nav-item.active::after {
+    content: "";
+
+    position: absolute;
+
+    left: 14px;
+    right: 14px;
+
+    bottom: 0;
+
+    height: 3px;
+
+    border-radius:
+        4px 4px 0 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            #14b8a6,
+            #2dd4bf
+        );
+
+    box-shadow:
+        0 -2px 10px
+        rgba(45,212,191,0.45);
+}
+
+
+/* =====================================================
+   USER AREA
+   ===================================================== */
+
+.navbar-user {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-shrink: 0;
+}
+
+.user-avatar {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            #38bdf8,
+            #0ea5e9
+        );
+
+    color: white;
+
+    font-size: 16px;
+
+    box-shadow:
+        0 5px 15px
+        rgba(14,165,233,0.25);
+}
+
+.user-info {
+    max-width: 125px;
+}
+
+.user-greeting {
+    display: block;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: 600;
+}
+
+.user-menu-button {
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    background: transparent;
+
+    color:
+        rgba(255,255,255,0.75);
+
+    cursor: pointer;
+
+    transition:
+        0.3s;
+}
+
+.user-menu-button:hover {
+    color: white;
+}
+
+.user-menu-button i {
+    font-size: 11px;
+
+    transition:
+        transform 0.3s;
+}
+
+
+/* =====================================================
+   USER DROPDOWN
+   ===================================================== */
+
+.user-dropdown {
+    position: absolute;
+
+    top: calc(100% + 13px);
+
+    right: 0;
+
+    width: 205px;
+
+    padding: 8px;
+
+    border-radius: 15px;
+
+    background:
+        rgba(255,255,255,0.98);
+
+    border:
+        1px solid
+        rgba(148,163,184,0.18);
+
+    box-shadow:
+        0 18px 45px
+        rgba(15,23,42,0.18);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform:
+        translateY(-8px)
+        scale(0.97);
+
+    transform-origin:
+        top right;
+
+    transition:
+        0.25s ease;
+}
+
+.user-dropdown.show {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+.user-dropdown a {
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 11px 12px;
+
+    border-radius: 10px;
+
+    color:
+        #334155;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    transition:
+        0.25s;
+}
+
+.user-dropdown a:hover {
+    background:
+        #f0fdfa;
+
+    color:
+        #0f766e;
+}
+
+.user-dropdown a i {
+    width: 17px;
+
+    color:
+        #0f766e;
+
+    text-align: center;
+}
+
+.user-dropdown .logout-link {
+    color:
+        #dc2626;
+}
+
+.user-dropdown .logout-link i {
+    color:
+        #dc2626;
+}
+
+.dropdown-divider {
+    height: 1px;
+
+    margin: 6px 8px;
+
+    background:
+        #e2e8f0;
+}
+
+
+/* =====================================================
+   RESPONSIVE NAVBAR
+   ===================================================== */
+
+@media (max-width: 1150px) {
+
+    .navbar {
+        padding: 0 22px;
+    }
+
+    .nav-item {
+        padding: 0 11px;
+    }
+
+    .nav-item span {
+        font-size: 12px;
+    }
+
+    .nav-links {
+        margin-right: 15px;
+    }
+
+}
+
+
+@media (max-width: 900px) {
+
+    .logo-text small {
+        display: none;
+    }
+
+    .logo-text strong {
+        font-size: 16px;
+    }
+
+    .nav-item {
+        padding: 0 9px;
+    }
+
+    .nav-item span {
+        display: none;
+    }
+
+    .nav-item {
+        width: 48px;
+
+        justify-content: center;
+    }
+
+    .nav-item i {
+        font-size: 17px;
+    }
+
+    .nav-item.active::after {
+        left: 8px;
+        right: 8px;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .navbar {
+        padding: 0 12px;
+
+        min-height: 62px;
+    }
+
+    .nav-links {
+        height: 62px;
+
+        gap: 0;
+
+        margin-right: 8px;
+    }
+
+    .nav-item {
+        height: 62px;
+
+        width: 39px;
+
+        padding: 0 4px;
+    }
+
+    .navbar-logo {
+        gap: 7px;
+    }
+
+    .logo-icon {
+        width: 38px;
+        height: 38px;
+
+        font-size: 18px;
+
+        border-radius: 11px;
+    }
+
+    .logo-text strong {
+        font-size: 13px;
+    }
+
+    .user-info,
+    .user-menu-button {
+        display: none;
+    }
+
+    .user-avatar {
+        width: 34px;
+        height: 34px;
+
+        font-size: 14px;
+    }
+
+}
+
+
+/* =====================================================
+   ACCESSIBILITY
+   ===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .logo-icon {
+        animation: none;
+    }
+
+}

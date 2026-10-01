@@ -1,0 +1,750 @@
+{% extends "assist/base.html" %}
+{% load static %}
+
+{% block title %}
+Login | AI Health Assistant
+{% endblock %}
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/auth.css' %}"
+>
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+>
+
+<style>
+/* =========================================================
+   FACE LOGIN MODAL
+========================================================= */
+
+.face-login-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(5, 20, 35, 0.78);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.face-login-modal.active {
+    display: flex;
+    animation: faceModalFade 0.3s ease;
+}
+
+.face-login-card {
+    width: min(460px, 100%);
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
+    animation: faceCardEnter 0.4s ease;
+}
+
+.face-login-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.face-login-header .face-icon {
+    width: 62px;
+    height: 62px;
+    margin: 0 auto 14px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0f766e, #14b8a6);
+    color: #ffffff;
+    font-size: 26px;
+    box-shadow: 0 10px 25px rgba(15, 118, 110, 0.25);
+}
+
+.face-login-header h3 {
+    margin: 0 0 7px;
+    color: #102a43;
+    font-size: 22px;
+}
+
+.face-login-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+}
+
+.face-login-camera {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 18px;
+    background: #07141f;
+    margin-bottom: 16px;
+}
+
+.face-login-camera video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+}
+
+.face-login-frame {
+    position: absolute;
+    inset: 15%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    border-radius: 45%;
+    pointer-events: none;
+}
+
+.face-login-scan {
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    height: 2px;
+    top: 25%;
+    background: #14b8a6;
+    box-shadow: 0 0 12px #14b8a6;
+    animation: faceScan 2.2s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.face-login-status {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 13px;
+}
+
+.face-login-status.success {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.face-login-status.error {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.face-login-status.loading {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.face-login-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.face-login-cancel,
+.face-login-retry {
+    flex: 1;
+    border: none;
+    border-radius: 12px;
+    padding: 13px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.face-login-cancel {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.face-login-retry {
+    background: #0f766e;
+    color: #ffffff;
+}
+
+.face-login-cancel:hover,
+.face-login-retry:hover {
+    transform: translateY(-2px);
+}
+
+.face-login-security {
+    margin-top: 16px;
+    text-align: center;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.face-login-security i {
+    margin-right: 5px;
+    color: #0f766e;
+}
+
+@keyframes faceModalFade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes faceCardEnter {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes faceScan {
+    0% {
+        top: 25%;
+    }
+
+    50% {
+        top: 70%;
+    }
+
+    100% {
+        top: 25%;
+    }
+}
+
+@media (max-width: 500px) {
+
+    .face-login-card {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .face-login-actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="auth-page">
+
+    <div class="auth-container">
+
+        <!-- ==================================================
+             LEFT SIDE
+        =================================================== -->
+
+        <section class="auth-hero">
+
+            <div class="auth-brand">
+
+                <div class="auth-brand-icon">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+
+                <div class="auth-brand-text">
+
+                    <strong>
+                        AI Health Assistant
+                    </strong>
+
+                    <span>
+                        Intelligent Healthcare
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="auth-hero-content">
+
+                <div class="auth-eyebrow">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                    Secure Healthcare Access
+
+                </div>
+
+
+                <h1>
+
+                    Welcome
+
+                    <span>
+                        back.
+                    </span>
+
+                </h1>
+
+
+                <p>
+
+                    Sign in to access your personal
+                    healthcare dashboard, intelligent
+                    health tools, and secure medical
+                    assistance.
+
+                </p>
+
+
+                <div class="auth-benefits">
+
+                    <div class="auth-benefit">
+
+                        <div class="auth-benefit-icon">
+
+                            <i class="fa-solid fa-heart-pulse"></i>
+
+                        </div>
+
+                        <div class="auth-benefit-content">
+
+                            <strong>
+                                Personal Health
+                            </strong>
+
+                            <span>
+                                Manage your health information
+                                in one secure place.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="auth-benefit">
+
+                        <div class="auth-benefit-icon">
+
+                            <i class="fa-solid fa-fingerprint"></i>
+
+                        </div>
+
+                        <div class="auth-benefit-content">
+
+                            <strong>
+                                Face ID Authentication
+                            </strong>
+
+                            <span>
+                                Access your account with
+                                secure biometric verification.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="auth-benefit">
+
+                        <div class="auth-benefit-icon">
+
+                            <i class="fa-solid fa-brain"></i>
+
+                        </div>
+
+                        <div class="auth-benefit-content">
+
+                            <strong>
+                                AI Health Assistance
+                            </strong>
+
+                            <span>
+                                Get intelligent support for
+                                your healthcare journey.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="auth-hero-footer">
+
+                <i class="fa-solid fa-lock"></i>
+
+                Secure & privacy-focused healthcare platform
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             RIGHT SIDE
+        =================================================== -->
+
+        <section class="auth-form-section">
+
+            <div class="auth-form-wrapper">
+
+                <div class="auth-form-header">
+
+                    <h2>
+                        Welcome Back
+                    </h2>
+
+                    <p>
+                        Login to continue to your account.
+                    </p>
+
+                </div>
+
+
+                <!-- DJANGO MESSAGES -->
+
+                {% if messages %}
+
+                    <div class="auth-messages">
+
+                        {% for message in messages %}
+
+                            <div
+                                class="auth-message
+                                {% if message.tags %}
+                                    {{ message.tags }}
+                                {% endif %}"
+                            >
+
+                                <span class="message-icon">
+
+                                    {% if message.tags == "error" %}
+
+                                        <i class="fa-solid fa-circle-exclamation"></i>
+
+                                    {% else %}
+
+                                        <i class="fa-solid fa-circle-check"></i>
+
+                                    {% endif %}
+
+                                </span>
+
+                                <div class="message-content">
+
+                                    <strong>
+
+                                        {% if message.tags == "error" %}
+                                            Error
+                                        {% else %}
+                                            Success
+                                        {% endif %}
+
+                                    </strong>
+
+                                    <span>
+                                        {{ message }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- LOGIN FORM -->
+
+                <form
+                    method="POST"
+                    class="auth-form"
+                >
+
+                    {% csrf_token %}
+
+
+                    <!-- USERNAME -->
+
+                    <div class="form-group">
+
+                        <label for="username">
+                            Username
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i
+                                class="fa-solid fa-user input-icon"
+                            ></i>
+
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                class="form-input"
+                                placeholder="Enter your username"
+                                autocomplete="username"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <div class="input-wrapper">
+
+                            <i
+                                class="fa-solid fa-lock input-icon"
+                            ></i>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="form-input"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                onclick="togglePassword(
+                                    'password',
+                                    this
+                                )"
+                                aria-label="Show password"
+                            >
+
+                                <i
+                                    class="fa-solid fa-eye"
+                                ></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- LOGIN BUTTON -->
+
+                    <button
+                        type="submit"
+                        class="auth-submit-btn"
+                    >
+
+                        <span>
+                            Login
+                        </span>
+
+                        <i
+                            class="fa-solid fa-arrow-right"
+                        ></i>
+
+                    </button>
+
+                </form>
+
+
+                <!-- DIVIDER -->
+
+                <div class="auth-divider">
+
+                    <span>
+                        OR
+                    </span>
+
+                </div>
+
+
+                <!-- FACE ID LOGIN -->
+
+                <button
+                    type="button"
+                    id="faceLoginBtn"
+                    class="face-login-btn"
+                >
+
+                    <i
+                        class="fa-solid fa-fingerprint"
+                    ></i>
+
+                    <span>
+                        Login with Face ID
+                    </span>
+
+                </button>
+
+
+                <!-- REGISTER -->
+
+                <div class="auth-switch">
+
+                    Don't have an account?
+
+                    <a href="{% url 'register' %}">
+                        Create Account
+                    </a>
+
+                </div>
+
+
+                <!-- FOOTER -->
+
+                <div class="auth-form-footer">
+
+                    <i
+                        class="fa-solid fa-shield-halved"
+                    ></i>
+
+                    Your information is protected
+                    with secure authentication.
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     FACE LOGIN MODAL
+========================================================= -->
+
+<div
+    id="faceLoginModal"
+    class="face-login-modal"
+>
+
+    <div class="face-login-card">
+
+        <div class="face-login-header">
+
+            <div class="face-icon">
+
+                <i class="fa-solid fa-face-smile"></i>
+
+            </div>
+
+            <h3>
+                Face ID Login
+            </h3>
+
+            <p>
+                Look directly at the camera to continue.
+            </p>
+
+        </div>
+
+
+        <div class="face-login-camera">
+
+            <video
+                id="faceLoginCamera"
+                autoplay
+                playsinline
+                muted
+            ></video>
+
+            <div class="face-login-frame"></div>
+
+            <div class="face-login-scan"></div>
+
+        </div>
+
+
+        <div
+            id="faceLoginStatus"
+            class="face-login-status"
+        >
+            Starting camera...
+        </div>
+
+
+        <div class="face-login-actions">
+
+            <button
+                type="button"
+                id="faceLoginCancel"
+                class="face-login-cancel"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                id="faceLoginRetry"
+                class="face-login-retry"
+            >
+                <i class="fa-solid fa-rotate-right"></i>
+                Retry
+            </button>
+
+        </div>
+
+
+        <div class="face-login-security">
+
+            <i class="fa-solid fa-shield-halved"></i>
+
+            Face verification is performed securely
+            against your registered Face ID.
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- FACE LOGIN CONFIG -->
+
+<div
+    id="faceLoginConfig"
+    data-login-url="{% url 'face_login_api' %}"
+></div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script src="{% static 'js/auth.js' %}"></script>
+
+<script src="{% static 'js/face_login.js' %}"></script>
+
+{% endblock %}
